@@ -1,0 +1,2670 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدونات فخري | Fakhri Blogs</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+
+        window.closeModal = function(id) {
+            const modal = document.getElementById(id);
+            if(modal) modal.classList.remove('active');
+            if(id === 'contentViewerModal') {
+                const vc = document.getElementById('viewerContainer');
+                if(vc) vc.innerHTML = ''; 
+            }
+        };
+        
+        
+        window.selectBtnType = function(type) {
+            try {
+                const input = document.getElementById('newBtnType_current');
+                if(input) input.value = type;
+                const g = document.getElementById('typeSelector_general');
+                const s = document.getElementById('typeSelector_specific');
+                if(g && s) {
+                    if (type === 'general') {
+                        g.className = "flex-1 p-3 bg-primary text-white shadow rounded-md font-bold transition flex items-center justify-center gap-2";
+                        s.className = "flex-1 p-3 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md font-bold transition flex items-center justify-center gap-2";
+                    } else {
+                        s.className = "flex-1 p-3 bg-primary text-white shadow rounded-md font-bold transition flex items-center justify-center gap-2";
+                        g.className = "flex-1 p-3 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md font-bold transition flex items-center justify-center gap-2";
+                    }
+                }
+            } catch(e) {}
+        };
+
+
+
+
+
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: { primary: '#002244', secondary: '#f3f4f6', accent: '#39FF14' },
+                    fontFamily: { sans: ['Tajawal', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" async></script>
+    
+    <style>
+        body { transition: background-color 0.3s, color 0.3s; }
+        .view { display: none !important; }
+        .view.active { display: flex !important; }
+        .admin-tab, .student-tab { display: none; }
+        .admin-tab.active, .student-tab.active { display: block; }
+        .modal { display: none; }
+        .modal.active { display: flex; }
+        .compte-active { text-shadow: 0 0 10px rgba(57, 255, 20, 0.5); }
+
+        html.dark body { background-color: #111827 !important; color: #f9fafb !important; }
+        html.dark .bg-white { background-color: #1f2937 !important; border-color: #374151 !important; color: #f9fafb !important; }
+        html.dark .text-gray-800, html.dark .text-gray-600, html.dark .text-gray-500, html.dark .text-gray-400 { color: #f9fafb !important; }
+        html.dark .text-primary { color: #60a5fa !important; } 
+        html.dark .bg-primary { background-color: #1e3a8a !important; color: #ffffff !important; }
+        html.dark .bg-gray-50, html.dark .bg-gray-100, html.dark .bg-blue-50 { background-color: #111827 !important; color: #f9fafb !important; border-color: #374151 !important; }
+        html.dark input, html.dark textarea, html.dark select { background-color: #374151 !important; color: white !important; border-color: #4b5563 !important; }
+        html.dark .shadow-sm, html.dark .shadow-md, html.dark .shadow-lg, html.dark .shadow-xl { box-shadow: none !important; border-color: #374151 !important; }
+        html.dark .border-gray-100, html.dark .border-gray-200, html.dark .border-gray-300 { border-color: #4b5563 !important; }
+        html.dark .prose, html.dark .prose * { color: #f9fafb !important; }
+        
+        .spinner-circle {
+            display: inline-block; width: 24px; height: 24px; position: relative;
+            animation: rotate-spinner 2s linear infinite; margin-right: 8px;
+        }
+        .spinner-circle.small { width: 16px; height: 16px; margin-right: 4px; }
+        .spinner-circle div {
+            position: absolute; width: 7px; height: 7px; background-color: white;
+            border-radius: 50%; animation: bounce-spinner 1.5s infinite ease-in-out both;
+        }
+        .spinner-circle.small div { width: 4px; height: 4px; }
+        .spinner-circle div:nth-child(1) { top: 0; left: 8.5px; animation-delay: -0.9s; }
+        .spinner-circle div:nth-child(2) { top: 8.5px; right: 0; animation-delay: -0.6s; }
+        .spinner-circle div:nth-child(3) { bottom: 0; left: 8.5px; animation-delay: -0.3s; }
+        .spinner-circle div:nth-child(4) { top: 8.5px; left: 0; animation-delay: 0s; }
+        .spinner-circle.small div:nth-child(1) { top: 0; left: 6px; }
+        .spinner-circle.small div:nth-child(2) { top: 6px; right: 0; }
+        .spinner-circle.small div:nth-child(3) { bottom: 0; left: 6px; }
+        .spinner-circle.small div:nth-child(4) { top: 6px; left: 0; }
+
+        @keyframes rotate-spinner { 100% { transform: rotate(360deg); } }
+        @keyframes bounce-spinner { 0%, 100% { transform: scale(0); opacity: 0.3; } 50% { transform: scale(1); opacity: 1; } }
+
+        /* Quiz Animations */
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes floatTrophy { 0%, 100% { transform: translateY(0) scale(1.1); } 50% { transform: translateY(-10px) scale(1.1); } }
+        @keyframes breakHeart { 0% { transform: scale(1); } 50% { transform: scale(1.2) rotate(-10deg); } 100% { transform: scale(1) rotate(10deg); opacity: 1; } }
+        
+        .quiz-success-anim { animation: popIn 0.5s ease-out forwards; }
+        .trophy-icon { animation: floatTrophy 2s infinite ease-in-out; color: #10b981; text-shadow: 0 0 20px rgba(16,185,129,0.5); }
+        .heart-icon { animation: breakHeart 1s ease-in-out forwards; color: #ef4444; }
+
+        #toast {
+            visibility: hidden; min-width: 250px; background-color: #39FF14; color: #002244; 
+            text-align: center; border-radius: 50px; padding: 16px; position: fixed; z-index: 99999; 
+            left: 50%; bottom: -50px; transform: translateX(-50%); font-size: 17px; font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); opacity: 0; transition: all 0.4s ease-in-out;
+        }
+        #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
+    
+        #methodologyArticleContent h3 { font-size: 1.75rem; font-weight: 800; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #1e3a8a; }
+        .dark #methodologyArticleContent h3 { color: #60a5fa; }
+        #methodologyArticleContent h4 { font-size: 1.5rem; font-weight: 700; margin-top: 1.25rem; margin-bottom: 0.5rem; color: #2563eb; }
+        .dark #methodologyArticleContent h4 { color: #93c5fd; }
+        #methodologyArticleContent p { margin-bottom: 1rem; line-height: 1.8; }
+        #methodologyArticleContent { line-height: 1.8; font-size: 1.125rem; }
+</style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen relative" id="bodyElement">
+
+    <div id="toast"><i class="fas fa-check-circle ml-2"></i>تم نسخ الكود بنجاح!</div>
+    <div id="errorBanner" class="hidden fixed top-0 w-full bg-red-600 text-white text-center p-3 z-[100] font-bold shadow-lg"></div>
+
+    <!-- LOGIN VIEW -->
+    <div id="loginView" class="view active min-h-screen flex-col items-center justify-center p-4 relative z-10">
+        <button type="button" onclick="toggleTheme()" class="absolute top-4 left-4 z-50 w-12 h-12 flex items-center justify-center rounded-full bg-primary text-white shadow-lg hover:opacity-90 transition">
+            <i class="fas fa-moon text-xl" id="themeIconLogin"></i>
+        </button>
+
+        <div class="text-center mb-8">
+            <h1 class="text-5xl font-bold text-primary dark:text-blue-400 mb-2"><i class="fas fa-feather text-primary dark:text-blue-400 ml-2"></i>مدونات فخري</h1>
+            <h2 class="text-3xl font-semibold text-gray-600 dark:text-gray-300">Fakhri Blogs</h2>
+        </div>
+
+        <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 w-full max-w-md">
+            <div class="text-sm font-bold text-center text-primary mb-6 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                هذا الكود خاص بحسابك فقط
+            </div>
+            
+            <form id="loginForm" onsubmit="event.preventDefault(); handleSafeLogin(); return false;" class="space-y-6">
+                <input type="text" id="loginCode" placeholder="أدخل الكود الخاص بك" 
+                       class="w-full text-center text-xl p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none" required>
+                
+                <button type="submit" id="loginBtn" class="w-full bg-primary text-white text-xl font-bold py-4 rounded-lg hover:opacity-90 transition shadow-lg flex items-center justify-center gap-2">
+                    <span id="loginBtnText">دخول الآن</span>
+                    <div id="loginSpinner" class="spinner-circle hidden"><div></div><div></div><div></div><div></div></div>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD VIEW -->
+    <div id="adminView" class="view min-h-screen flex-col">
+        <div id="adminCover" class="w-full h-48 bg-gray-300 bg-cover bg-center hidden"></div>
+                <header class="bg-white/90 dark:bg-gray-900/90 dark:border-b dark:border-gray-800 backdrop-blur shadow-sm p-4 z-40">
+            <div class="max-w-6xl mx-auto flex justify-between items-start sm:items-center">
+                <div class="flex flex-col gap-2">
+                    <h1 class="text-2xl font-bold text-primary"><i class="fas fa-feather ml-2"></i>مدونات فخري</h1>
+                    <div class="flex flex-col gap-2 mt-1">
+                        <span class="text-accent font-bold bg-gray-900 px-3 py-1 rounded-full text-xs compte-active whitespace-nowrap shadow-sm self-start">
+                            <span class="inline-block w-2 h-2 rounded-full bg-accent ml-1 animate-pulse"></span> لوحة التحكم
+                        </span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 mt-1 sm:mt-0">
+                    <button onclick="toggleTheme()" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 text-primary dark:text-blue-300 hover:bg-gray-200 transition">
+                        <i class="fas fa-moon" id="themeIconAdmin"></i>
+                    </button>
+                    <button id="adminMobileMenuBtn" onclick="toggleAdminMobileMenu()" class="w-10 h-10 flex items-center justify-center text-xl text-primary bg-blue-50 rounded-lg hover:bg-blue-100">
+                        <i class="fas fa-bars" id="adminMenuIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div id="adminMobileNavMenu" class="hidden bg-white shadow-2xl absolute w-full z-50 border-b border-gray-200 transition-all duration-300 transform origin-top">
+            <div class="flex justify-between items-center bg-gray-50 p-4 border-b border-gray-100">
+                <span class="font-bold text-primary">القائمة</span>
+                <button onclick="toggleAdminMobileMenu()" class="text-red-500 bg-red-50 w-8 h-8 rounded-full flex items-center justify-center"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="flex flex-col p-4 space-y-2">
+                <button onclick="showAdminTab('codesTab'); toggleAdminMobileMenu()" class="text-right p-3 rounded font-bold text-primary hover:bg-gray-50"><i class="fas fa-lock ml-2 w-4"></i> الأكواد</button>
+                <button onclick="showAdminTab('contentTab'); toggleAdminMobileMenu()" class="text-right p-3 rounded font-bold text-primary hover:bg-gray-50"><i class="fas fa-book ml-2 w-4"></i> مدونات فلسفية</button>
+                <button onclick="showAdminTab('blogsTab'); toggleAdminMobileMenu()" class="text-right p-3 rounded font-bold text-primary hover:bg-gray-50"><i class="fas fa-feather ml-2 w-4"></i> تدوينات</button>
+                <button onclick="showAdminTab('methodologiesTab'); toggleAdminMobileMenu()" class="text-right p-3 rounded font-bold text-primary hover:bg-gray-50"><i class="fas fa-lightbulb ml-2 w-4 text-yellow-400"></i> منهجيات فلسفية</button>
+                <button onclick="showAdminTab('gamesTab'); toggleAdminMobileMenu()" class="text-right p-3 rounded font-bold text-primary hover:bg-gray-50"><i class="fas fa-gamepad ml-2 w-4 text-purple-500"></i> ألعاب فلسفية</button>
+                <button onclick="showAdminTab('whatsappTab'); toggleAdminMobileMenu()" class="text-right p-3 rounded font-bold text-primary hover:bg-gray-50"><i class="fab fa-whatsapp text-green-500 ml-2 w-4 text-lg"></i> واتساب فخري</button>
+                <button onclick="showAdminTab('settingsTab'); toggleAdminMobileMenu()" class="text-right p-3 rounded font-bold text-primary hover:bg-gray-50"><i class="fas fa-user ml-2 w-4"></i> حسابي</button>
+                <button onclick="logout()" class="text-right p-3 rounded font-bold text-red-500 mt-4 border-t border-gray-100 pt-4"><i class="fas fa-sign-out-alt ml-2"></i> تسجيل الخروج</button>
+            </div>
+        </div>
+
+        <div class="flex-1 max-w-6xl mx-auto w-full p-4 md:p-8 relative z-10">
+            <div id="codesTab" class="admin-tab active space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-center bg-white p-6 rounded-xl shadow-sm border border-gray-100 gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold"><i class="fas fa-lock text-primary ml-2"></i> إدارة الأكواد</h2>
+                        <p class="text-accent font-bold mt-2 bg-gray-900 inline-block px-3 py-1 rounded-full text-sm compte-active whitespace-nowrap">
+                            الحسابات النشطة: <span id="activeCount">0</span>
+                        </p>
+                    </div>
+                    <div class="flex gap-3 w-full sm:w-auto">
+                        <button onclick="generateCode()" class="flex-1 bg-primary text-white px-4 py-2 rounded-lg font-bold shadow hover:opacity-90 text-sm"><i class="fas fa-plus ml-1"></i> توليد</button>
+                        <button onclick="deactivateAllCodes()" class="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg font-bold shadow hover:opacity-90 text-sm"><i class="fas fa-power-off ml-1"></i> تصفير</button>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <table class="w-full text-right">
+                        <thead class="bg-gray-50 border-b border-gray-100">
+                            <tr><th class="p-4 w-2/3">الكود</th><th class="p-4 w-1/3">الحالة</th></tr>
+                        </thead>
+                        <tbody id="codesTableBody" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="contentTab" class="admin-tab hidden space-y-6">
+                <div id="breadcrumbNav" class="hidden bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-4">
+                    <div class="flex justify-between items-center w-full">
+                        <div class="flex items-center gap-2 flex-wrap flex-1" id="breadcrumbContainer"></div>
+                        <button onclick="navigateBack()" id="breadcrumbBackBtn" class="bg-gray-100 hover:bg-gray-200 text-primary px-4 py-2 rounded-lg font-bold transition flex items-center gap-2 whitespace-nowrap">
+                            <i class="fas fa-arrow-right"></i> عودة
+                        </button>
+                    </div>
+                </div>
+
+                <div id="unitCreateForm" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <h2 class="text-xl font-bold mb-4"><i class="fas fa-book text-primary ml-2"></i> إنشاء مدونة جديدة</h2>
+                    <form onsubmit="event.preventDefault(); createUnit(); return false;" class="flex flex-col sm:flex-row gap-4">
+                        <input type="text" id="unitTitle" placeholder="عنوان المدونة" class="flex-1 p-3 border border-gray-300 rounded-lg text-gray-800" required>
+                        <input type="url" id="unitBgImage" placeholder="رابط صورة غلاف المدونة (اختياري)" class="flex-1 p-3 border border-gray-300 rounded-lg text-gray-800">
+                        <button type="submit" class="bg-primary text-white px-8 py-3 rounded-lg font-bold">إنشاء</button>
+                    </form>
+                </div>
+                <div id="adminUnitsContainer" class="space-y-4"></div>
+                <div id="adminButtonsContainer" class="hidden space-y-4"></div>
+            </div>
+
+            <div id="blogsTab" class="admin-tab hidden max-w-3xl mx-auto space-y-6">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
+                    <h2 class="text-xl font-bold mb-4"><i class="fas fa-feather text-primary ml-2"></i> كتابة تدوينة جديدة</h2>
+                    <textarea id="newBlogContent" placeholder="ماذا يدور في ذهنك؟..." class="w-full h-32 p-4 border border-gray-300 rounded-lg resize-none mb-4 text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                    <button onclick="postBlog()" class="bg-primary text-white px-8 py-3 rounded-lg font-bold w-full sm:w-auto"><i class="fas fa-paper-plane ml-2"></i> نشر التدوينة</button>
+                </div>
+                <div id="adminBlogsContainer" class="space-y-6"></div>
+            </div>
+
+            
+            <div id="methodologiesTab" class="admin-tab hidden space-y-6">
+                <div class="max-w-4xl mx-auto space-y-6">
+                    <div class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2"><i class="fas fa-lightbulb text-yellow-400"></i> إدارة المنهجيات الفلسفية</h2>
+                            <p class="text-gray-500 mt-1">أضف أزرار المنهجيات بمقالاتها المنسقة</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-bold mb-4">إضافة منهجية جديدة</h3>
+                        <input type="text" id="methodologyTitle" placeholder="اسم الزر (المنهجية)..." class="w-full p-4 border border-gray-300 rounded-xl mb-4 focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <div class="border border-gray-300 rounded-xl overflow-hidden mb-4">
+                            <div class="bg-gray-100 p-3 border-b border-gray-300 flex flex-wrap gap-2">
+                                <button type="button" onclick="execRichTextMethodology('bold')" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-100 font-bold">B</button>
+                                <button type="button" onclick="execRichTextMethodology('underline')" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-100 underline">U</button>
+                                <button type="button" onclick="execRichTextMethodology('foreColor', '#e53e3e')" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-100 text-red-500"><i class="fas fa-palette"></i></button>
+                                <button type="button" onclick="execRichTextMethodology('foreColor', '#3182ce')" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-100 text-blue-500"><i class="fas fa-palette"></i></button>
+                                <button type="button" onclick="execRichTextMethodology('foreColor', '#38a169')" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-100 text-green-500"><i class="fas fa-palette"></i></button>
+                                <button type="button" onclick="execRichTextMethodology('foreColor', '#805ad5')" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-100 text-purple-500"><i class="fas fa-palette"></i></button>
+                                <button type="button" onclick="execRichTextMethodology('foreColor', '#dd6b20')" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-100 text-orange-500"><i class="fas fa-palette"></i></button>
+                                <button type="button" onclick="execRichTextMethodology('foreColor', '#1f2937')" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-100 text-gray-800"><i class="fas fa-palette"></i></button>
+                                <button type="button" onclick="execRichTextMethodology('fontSize', '6')" class="px-3 h-8 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-100 font-bold text-lg" title="نص كبير جدا">T++</button>
+                                <button type="button" onclick="execRichTextMethodology('fontSize', '5')" class="px-3 h-8 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-100 font-bold text-base" title="نص كبير">T+</button>
+                                <button type="button" onclick="execRichTextMethodology('fontSize', '3')" class="px-3 h-8 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-100 font-bold text-sm" title="نص عادي">T</button>
+                            </div>
+                            <div id="methodologyContentEditor" contenteditable="true" class="w-full p-6 min-h-[300px] max-h-[500px] overflow-y-auto bg-white text-gray-800 outline-none text-right prose max-w-none" dir="rtl" placeholder="اكتب محتوى المنهجية هنا..."></div>
+                        </div>
+                        <button id="saveMethodologyBtn" onclick="saveMethodology()" class="bg-primary text-white w-full py-4 rounded-xl font-bold text-lg hover:bg-blue-800 transition shadow-md">نشر المنهجية</button>
+                    </div>
+                    <div id="adminMethodologiesContainer" class="flex flex-wrap gap-4"></div>
+                </div>
+            </div>
+
+            
+        <!-- Admin WhatsApp Tab -->
+        <div id="whatsappTab" class="admin-tab hidden space-y-8 animate-fade-in pb-20">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center text-white shadow-inner">
+                    <i class="fab fa-whatsapp text-3xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">واتساب فخري</h2>
+                    <p class="text-gray-500 mt-1">تكوين رابط التواصل السريع</p>
+                </div>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 max-w-2xl mx-auto">
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-gray-700 dark:text-gray-300 font-bold mb-2">رابط واتساب الخاص بك</label>
+                        <input type="text" id="whatsappLinkInput" placeholder="مثال: https://wa.me/1234567890" class="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-left" dir="ltr">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 dark:text-gray-300 font-bold mb-2">رسالة قصيرة تظهر للطلاب (اختياري)</label>
+                        <textarea id="whatsappMsgInput" placeholder="اكتب رسالة ترحيبية قصيرة هنا..." class="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white min-h-[100px]"></textarea>
+                    </div>
+                    <button onclick="saveWhatsappConfig()" class="bg-green-500 text-white w-full py-4 rounded-xl font-bold text-lg hover:bg-green-600 transition shadow-md flex items-center justify-center gap-2">
+                        <i class="fas fa-save"></i> حفظ الإعدادات
+                    </button>
+                </div>
+            </div>
+            
+            <div class="max-w-md mx-auto mt-12 text-center">
+                <h3 class="text-xl font-bold text-gray-500 dark:text-gray-400 mb-6">المعاينة (كيف سيراها التلميذ)</h3>
+                <div id="whatsappAdminPreview"></div>
+            </div>
+        </div>
+        
+        <!-- Admin Games Tab -->
+        <div id="gamesTab" class="admin-tab hidden space-y-8 animate-fade-in pb-20">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-12 h-12 bg-purple-900 rounded-2xl flex items-center justify-center text-purple-400 shadow-inner">
+                    <i class="fas fa-gamepad text-2xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-black text-gray-800 dark:text-white tracking-tight">ألعاب فلسفية</h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">إدارة الأزرار العامة والكويزات التفاعلية</p>
+                </div>
+            </div>
+
+            <!-- Folder Management -->
+            <div id="adminGamesFoldersList" class="space-y-4 mb-8">
+                <!-- Game Folders load here -->
+            </div>
+
+            <!-- Create Folder Button -->
+            <button onclick="openCreateGameFolder()" class="bg-purple-600 text-white px-6 py-3 rounded-xl font-bold w-full md:w-auto hover:bg-purple-700 transition shadow-md flex items-center justify-center gap-2 mb-8">
+                <i class="fas fa-plus-circle"></i> زر عام جديد للألعاب
+            </button>
+
+            <!-- Quiz Creation / Management (Hidden until folder is selected) -->
+            <div id="adminGamesQuizManager" class="hidden bg-gray-50 dark:bg-gray-800/50 p-6 rounded-3xl border border-gray-200 dark:border-gray-700 mt-8 relative">
+                <button onclick="closeQuizManager()" class="absolute top-4 left-4 w-8 h-8 flex items-center justify-center bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition"><i class="fas fa-times"></i></button>
+                
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-6 flex items-center gap-2" id="quizManagerTitle">
+                    <i class="fas fa-folder-open text-purple-500"></i> إدارة كويزات الزر
+                </h3>
+                
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700">
+                    <input type="text" id="gameTitle" placeholder="عنوان الكويز..." class="w-full text-xl font-bold bg-transparent border-b-2 border-gray-100 dark:border-gray-700 focus:border-purple-500 outline-none py-3 mb-6 dark:text-white transition">
+                    
+                    <div class="space-y-4">
+                        <input type="text" id="gameQuestion" placeholder="اكتب السؤال هنا..." class="w-full p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:border-purple-500 outline-none dark:text-white">
+                        
+                        <div id="gameOptionsContainer" class="space-y-3">
+                            <div class="flex gap-3 items-center">
+                                <input type="radio" name="gameCorrectOption" value="0" checked class="w-5 h-5 text-purple-600 focus:ring-purple-500 cursor-pointer">
+                                <input type="text" placeholder="الخيار الأول..." class="flex-1 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:border-purple-500 outline-none dark:text-white game-option">
+                            </div>
+                            <div class="flex gap-3 items-center">
+                                <input type="radio" name="gameCorrectOption" value="1" class="w-5 h-5 text-purple-600 focus:ring-purple-500 cursor-pointer">
+                                <input type="text" placeholder="الخيار الثاني..." class="flex-1 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:border-purple-500 outline-none dark:text-white game-option">
+                            </div>
+                        </div>
+                        
+                        <button onclick="addGameOption()" class="text-purple-600 dark:text-purple-400 font-bold hover:bg-purple-50 dark:hover:bg-purple-900/30 px-4 py-2 rounded-lg transition text-sm flex items-center gap-2"><i class="fas fa-plus"></i> إضافة خيار آخر</button>
+                    </div>
+
+                    <div class="mt-8 pt-6 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-3">
+                        <button onclick="resetGameForm()" class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-xl font-bold transition">إلغاء</button>
+                        <button id="saveGameBtn" onclick="saveGame()" class="bg-purple-600 text-white px-8 py-3 rounded-xl font-bold text-lg hover:bg-purple-700 transition shadow-md flex items-center gap-2"><i class="fas fa-paper-plane"></i> حفظ الكويز</button>
+                    </div>
+                </div>
+
+                <div class="mt-12">
+                    <h4 class="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2"><i class="fas fa-list text-purple-500"></i> الكويزات داخل هذا الزر</h4>
+                    <div id="adminGamesContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        <!-- Quizzes in this folder load here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Game Folder Modal -->
+        <div id="createGameFolderModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 w-full max-w-md shadow-2xl transform scale-100 transition-all">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2"><i class="fas fa-folder-plus text-purple-500"></i> زر عام جديد للعبة</h3>
+                    <button onclick="closeCreateGameFolder()" class="text-gray-400 hover:text-red-500 w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center"><i class="fas fa-times"></i></button>
+                </div>
+                <input type="text" id="gameFolderTitle" placeholder="اسم الزر العام (مثال: كويزات المحور الأول)..." class="w-full p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:border-purple-500 outline-none dark:text-white mb-6">
+                <button onclick="saveGameFolder()" class="w-full bg-purple-600 text-white p-4 rounded-xl font-bold hover:bg-purple-700 transition shadow-md">حفظ الزر العام</button>
+            </div>
+        </div>
+
+
+        <div id="settingsTab" class="admin-tab hidden space-y-6 max-w-2xl mx-auto">
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 space-y-6">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center gap-3"><i class="fas fa-user text-primary"></i> إعدادات حسابي</h2>
+                    <div>
+                        <label class="block font-bold mb-2 text-gray-700 dark:text-gray-300">صورة الغلاف العلوية (رابط)</label>
+                        <input type="url" id="settingCoverImage" class="w-full p-3 border border-gray-300 rounded-lg text-left text-gray-800" dir="ltr" placeholder="https://example.com/cover.jpg">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-2 text-gray-700 dark:text-gray-300">صورة خلفية الموقع (رابط)</label>
+                        <input type="url" id="settingBgImage" class="w-full p-3 border border-gray-300 rounded-lg text-left text-gray-800" dir="ltr" placeholder="https://example.com/bg.jpg">
+                    </div>
+                    <div class="pt-6 border-t border-gray-100">
+                        <button onclick="saveSettingsWithSpinner(this)" class="w-full bg-primary text-white py-4 rounded-xl font-bold text-xl flex justify-center items-center gap-3 hover:opacity-90 shadow-lg">
+                            <span class="btn-text">حفظ الآن</span>
+                            <div class="spinner-circle small hidden"><div></div><div></div><div></div><div></div></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STUDENT DASHBOARD VIEW -->
+    <div id="studentView" class="view min-h-screen flex-col">
+        <div id="studentCover" class="w-full h-48 bg-gray-300 bg-cover bg-center hidden"></div>
+                <header class="bg-white/90 dark:bg-gray-900/90 dark:border-b dark:border-gray-800 backdrop-blur shadow-sm p-4 z-40">
+            <div class="max-w-6xl mx-auto flex justify-between items-start sm:items-center">
+                <div class="flex flex-col gap-2">
+                    <h1 class="text-2xl font-bold text-primary"><i class="fas fa-feather ml-2"></i>مدونات فخري</h1>
+                    <div class="flex flex-col gap-2 mt-1">
+                        <span class="text-accent font-bold bg-gray-900 px-3 py-1 rounded-full text-xs compte-active whitespace-nowrap shadow-sm self-start">
+                            <span class="inline-block w-2 h-2 rounded-full bg-accent ml-1 animate-pulse"></span> حسابك مفعل و صالح لعام كامل
+                        </span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 mt-1 sm:mt-0">
+                    <button onclick="toggleTheme()" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 text-primary dark:text-blue-300 hover:bg-gray-200 transition">
+                        <i class="fas fa-moon" id="themeIconStudent"></i>
+                    </button>
+                    <button id="mobileMenuBtn" onclick="toggleStudentMobileMenu()" class="w-10 h-10 flex items-center justify-center text-xl text-primary bg-blue-50 rounded-lg hover:bg-blue-100">
+                        <i class="fas fa-bars" id="studentMenuIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div id="studentMobileNavMenu" class="hidden bg-white dark:bg-gray-900 shadow-2xl absolute w-full z-50 border-b border-gray-200 dark:border-gray-800 transition-all duration-300 transform origin-top">
+            <div class="flex justify-between items-center bg-gray-50 dark:bg-gray-800 p-4 border-b border-gray-100 dark:border-gray-700">
+                <span class="font-bold text-primary dark:text-blue-300">القائمة</span>
+                <button onclick="toggleStudentMobileMenu()" class="text-red-500 bg-red-50 dark:bg-red-900/30 dark:text-red-400 w-8 h-8 rounded-full flex items-center justify-center"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="flex flex-col p-4 space-y-2">
+                <button onclick="showStudentTab('studentContentTab'); toggleStudentMobileMenu()" class="text-right p-3 rounded font-bold text-primary hover:bg-gray-50"><i class="fas fa-book ml-2 w-4"></i> مدونات فلسفية</button>
+                <button onclick="showStudentTab('studentBlogsTab'); toggleStudentMobileMenu()" class="text-right p-3 rounded font-bold text-primary hover:bg-gray-50"><i class="fas fa-feather ml-2 w-4"></i> تدوينات</button>
+                <button onclick="showStudentTab('studentMethodologiesTab'); toggleStudentMobileMenu()" class="text-right p-3 rounded font-bold text-primary hover:bg-gray-50"><i class="fas fa-lightbulb ml-2 w-4 text-yellow-400"></i> منهجيات فلسفية</button>
+                <button onclick="showStudentTab('gamesTab'); toggleStudentMobileMenu()" class="text-right p-3 rounded font-bold text-primary hover:bg-gray-50"><i class="fas fa-gamepad ml-2 w-4 text-purple-500"></i> ألعاب فلسفية</button>
+                <button onclick="showStudentTab('studentWhatsappTab'); toggleStudentMobileMenu()" class="text-right p-3 rounded font-bold text-primary hover:bg-gray-50"><i class="fab fa-whatsapp text-green-500 ml-2 w-4 text-lg"></i> واتساب فخري</button>
+                <button onclick="showStudentTab('studentSettingsTab'); toggleStudentMobileMenu()" class="text-right p-3 rounded font-bold text-primary hover:bg-gray-50"><i class="fas fa-user ml-2 w-4"></i> حسابي</button>
+                <button onclick="logout()" class="text-right p-3 rounded font-bold text-red-500 mt-4 border-t border-gray-100 pt-4"><i class="fas fa-sign-out-alt ml-2"></i> تسجيل الخروج</button>
+            </div>
+        </div>
+
+        <div class="flex-1 w-full relative z-10 p-4 md:p-8">
+            <div class="max-w-6xl mx-auto">
+                <div id="studentContentTab" class="student-tab active">
+                    <div id="studentUnitsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                    
+        <!-- Game Play View -->
+        <div id="studentGamePlayView" class="hidden fixed inset-0 bg-white dark:bg-gray-900 z-50 overflow-y-auto">
+            <div class="sticky top-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 p-4 flex items-center justify-between z-10 shadow-sm">
+                <button onclick="closeGamePlay()" class="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                <div class="flex-1 text-center font-bold text-gray-800 dark:text-white text-lg truncate px-4" id="gamePlayTitle">عنوان اللعبة</div>
+                <div class="w-10"></div>
+            </div>
+            <div class="p-6 max-w-3xl mx-auto min-h-[calc(100vh-80px)] flex flex-col justify-center" id="gamePlayContent">
+                <!-- Interactive quiz loads here -->
+            </div>
+        </div>
+
+
+        <div id="studentUnitDetails" class="hidden space-y-8">
+                        <button onclick="studentNavigateBack()" class="bg-white border border-gray-200 shadow-sm text-primary px-4 py-2 rounded-lg font-bold hover:bg-gray-50">
+                            <i class="fas fa-arrow-right ml-2"></i> عودة
+                        </button>
+                        <h2 id="activeUnitTitle" class="text-2xl md:text-3xl font-bold text-primary dark:text-white bg-white/95 dark:bg-gray-800/95 shadow-sm border border-gray-200 dark:border-gray-700 inline-block px-5 py-3 rounded-xl"></h2>
+                        <div id="rootButtonsContainer" class="flex flex-wrap gap-4 w-full justify-start items-start"></div>
+                    </div>
+                </div>
+
+                <div id="studentBlogsTab" class="student-tab hidden max-w-3xl mx-auto space-y-6">
+                    <div id="studentBlogsContainer" class="space-y-6"></div>
+                </div>
+
+                
+                <div id="studentMethodologiesTab" class="student-tab hidden">
+                    <div class="max-w-4xl mx-auto">
+                        <div class="flex items-center gap-4 mb-8 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm">
+                            <div class="w-16 h-16 rounded-full bg-blue-900 flex items-center justify-center shadow-inner">
+                                <i class="fas fa-lightbulb text-3xl text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl md:text-3xl font-black text-gray-800 dark:text-white">منهجيات فلسفية</h2>
+                                <p class="text-gray-500 dark:text-gray-400 font-medium">اختر المنهجية لقراءة التفاصيل</p>
+                            </div>
+                        </div>
+                        <div id="studentMethodologiesContainer" class="flex flex-wrap gap-4 w-full justify-start items-start"></div>
+                    </div>
+                </div>
+                
+                <div id="studentMethodologyArticleView" class="hidden fixed inset-0 z-[150] bg-gray-50 dark:bg-gray-900 overflow-y-auto w-full h-full">
+                    <div class="bg-white dark:bg-gray-800 min-h-full pb-20">
+                        <div class="sticky top-0 z-40 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 p-4 flex items-center shadow-sm">
+                            <button onclick="closeMethodologyArticle()" class="w-12 h-12 flex items-center justify-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full transition-colors shrink-0">
+                                <i class="fas fa-arrow-right text-gray-800 dark:text-white text-xl"></i>
+                            </button>
+                            <h2 id="methodologyArticleTitle" class="text-2xl font-black text-blue-900 dark:text-blue-400 mr-4 flex-1 truncate"></h2>
+                        </div>
+                        <div class="max-w-4xl mx-auto p-6 md:p-12">
+                            <div id="methodologyArticleContent" class="prose max-w-none text-xl leading-relaxed text-gray-800 dark:text-gray-200"></div>
+                        </div>
+                    </div>
+                </div>
+
+                
+        <!-- Student WhatsApp Tab -->
+        <div id="studentWhatsappTab" class="student-tab hidden space-y-8 animate-fade-in pb-20">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="w-14 h-14 bg-green-500 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/30">
+                    <i class="fab fa-whatsapp text-4xl text-white drop-shadow-md"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-black text-gray-800 dark:text-white">تواصل معي</h2>
+                    <p class="text-gray-500 font-medium mt-1">تواصل مع أستاذ المادة بشكل مباشر</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-center pt-8">
+                <div id="studentWhatsappDisplay" class="w-full max-w-sm">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Games Tab -->
+        <div id="studentGamesTab" class="student-tab hidden space-y-8 animate-fade-in pb-20">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="w-14 h-14 bg-purple-900 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/20">
+                    <i class="fas fa-gamepad text-3xl text-purple-400"></i>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-black text-gray-800 dark:text-white tracking-tight">ألعاب فلسفية</h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm mt-1 flex items-center gap-2"><i class="fas fa-sparkles text-yellow-500"></i> اختبر معلوماتك واستمتع</p>
+                </div>
+            </div>
+            
+            <!-- Student Games Folders Grid -->
+            <div id="studentGameFoldersContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <!-- Game Folders load here -->
+            </div>
+
+            <!-- Student Quizzes inside Folder (Hidden initially) -->
+            <div id="studentQuizzesView" class="hidden">
+                <button onclick="backToGameFolders()" class="mb-6 text-purple-600 dark:text-purple-400 font-bold flex items-center gap-2 hover:bg-purple-50 dark:hover:bg-purple-900/30 px-4 py-2 rounded-xl transition w-fit"><i class="fas fa-arrow-right"></i> رجوع للأزرار العامة</button>
+                <h3 id="studentActiveFolderName" class="text-2xl font-bold text-gray-800 dark:text-white mb-6">كويزات</h3>
+                <div id="studentGamesContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    <!-- Quizzes load here -->
+                </div>
+            </div>
+        </div>
+
+
+        <div id="studentSettingsTab" class="student-tab hidden max-w-md mx-auto">
+                    <div id="profileDisplayMode" class="bg-gradient-to-br from-primary to-blue-900 rounded-3xl w-full flex flex-col shadow-2xl overflow-hidden relative mb-6 border border-blue-400/30">
+                        <!-- Decorative background elements -->
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-xl"></div>
+                        <div class="absolute bottom-0 left-0 w-40 h-40 bg-blue-400/20 rounded-full -ml-10 -mb-10 blur-xl"></div>
+                        
+                        <div class="p-8 text-white relative z-10">
+                            <div class="flex justify-between items-start mb-8">
+                                <div class="w-20 h-20 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-4xl shadow-lg border border-white/20 text-white">
+                                    <i class="fas fa-user-graduate"></i>
+                                </div>
+                                <div class="text-left">
+                                    <h3 class="text-xl font-bold font-sans tracking-wide text-white/90">بطاقة التلميذ</h3>
+                                    <p class="text-blue-200 text-xs mt-1 uppercase tracking-widest">ID CARD</p>
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div class="flex gap-4 items-center bg-white/5 backdrop-blur-sm p-4 rounded-xl border border-white/10">
+                                    <div class="text-blue-300 w-1/4 text-sm font-bold"><i class="fas fa-user ml-2"></i>الاسم:</div>
+                                    <div id="dispFirstName" class="text-xl font-bold text-white flex-1">-</div>
+                                </div>
+                                <div class="flex gap-4 items-center bg-white/5 backdrop-blur-sm p-4 rounded-xl border border-white/10">
+                                    <div class="text-blue-300 w-1/4 text-sm font-bold"><i class="fas fa-user ml-2"></i>اللقب:</div>
+                                    <div id="dispLastName" class="text-xl font-bold text-white flex-1">-</div>
+                                </div>
+                                <div class="flex gap-4 items-center bg-white/5 backdrop-blur-sm p-4 rounded-xl border border-white/10">
+                                    <div class="text-blue-300 w-1/4 text-sm font-bold"><i class="fas fa-graduation-cap ml-2"></i>الشعبة:</div>
+                                    <div id="dispBranch" class="text-xl font-bold text-white flex-1">-</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-black/20 backdrop-blur-md p-4 flex justify-between items-center relative z-10 border-t border-white/10 rounded-b-3xl">
+                            <span class="text-accent text-sm font-bold flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span> حساب مفعل
+                            </span>
+                            <button onclick="toggleProfileEdit(true)" class="bg-white/20 hover:bg-white/30 text-white px-5 py-2 rounded-lg font-bold transition flex items-center gap-2 border border-white/20">
+                                <i class="fas fa-edit"></i> تعديل
+                            </button>
+                        </div>
+                    </div>
+                        
+                    <div id="profileEditMode" class="space-y-4 hidden text-right bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl">
+                        <div>
+                            <label class="block text-primary dark:text-gray-200 font-bold mb-2">الاسم</label>
+                            <input type="text" id="profFirstName" class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-primary dark:text-gray-200 font-bold mb-2">اللقب</label>
+                            <input type="text" id="profLastName" class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-primary dark:text-gray-200 font-bold mb-2">الشعبة</label>
+                            <input type="text" id="profBranch" class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-primary outline-none">
+                        </div>
+                        <button onclick="saveStudentProfile()" class="w-full bg-primary text-white py-3 rounded-xl font-bold mt-4 hover:opacity-90 transition"><i class="fas fa-save ml-2"></i>حفظ المعلومات</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal fixed inset-0 bg-black/60 z-50 items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-sm flex flex-col shadow-2xl overflow-hidden relative border-t-8 border-primary">
+            <button onclick="closeModal('profileModal')" class="absolute top-4 left-4 text-white hover:text-red-300 z-10 w-8 h-8 flex items-center justify-center bg-black/20 rounded-full"><i class="fas fa-times"></i></button>
+            <div class="bg-gradient-to-br from-primary to-blue-800 p-8 text-center text-white relative">
+                <i class="fas fa-id-badge absolute top-4 right-4 text-3xl opacity-20"></i>
+                <div class="w-24 h-24 bg-white rounded-full mx-auto flex items-center justify-center text-5xl shadow-lg border-4 border-white/20 mb-3 text-primary">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <h3 class="text-2xl font-bold font-sans">بطاقة التلميذ</h3>
+                <p class="text-blue-200 text-sm mt-1">مدونات فخري التعليمية</p>
+            </div>
+            <div class="p-8 space-y-5 text-right bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900">
+                <div class="border-b border-gray-100 dark:border-gray-700 pb-3">
+                    <p class="text-sm text-gray-500 dark:text-gray-400 font-bold">الاسم</p>
+                    <p id="modalDispFirstName" class="text-lg font-bold text-primary dark:text-white">-</p>
+                </div>
+                <div class="border-b border-gray-100 dark:border-gray-700 pb-3">
+                    <p class="text-sm text-gray-500 dark:text-gray-400 font-bold">اللقب</p>
+                    <p id="modalDispLastName" class="text-lg font-bold text-primary dark:text-white">-</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 font-bold">الشعبة</p>
+                    <p id="modalDispBranch" class="text-lg font-bold text-primary dark:text-white">-</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="addContentModal" class="modal fixed inset-0 bg-black/60 z-50 items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="text-2xl font-bold text-primary">إضافة محتوى للزر</h3>
+                <button onclick="closeModal('addContentModal')" class="text-gray-400 hover:text-red-500 text-xl"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1 space-y-6">
+                                <input type="hidden" id="activeButtonIdForContent">
+                <div class="mb-4">
+                    <label class="block font-bold mb-2 text-primary">عنوان المحتوى (يظهر على الزر)</label>
+                    <input type="text" id="contentBtnTitle" class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:border-primary outline-none" placeholder="عنوان الزر الخاص...">
+                </div>
+                <div>
+                    <label class="block font-bold mb-2">نوع المحتوى</label>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="setContentType('text')" id="typeBtn_text" class="flex-1 min-w-[80px] p-2 bg-primary text-white rounded-lg font-bold transition"><i class="fas fa-pen mb-1 block"></i> نص</button>
+                        <button type="button" onclick="setContentType('image')" id="typeBtn_image" class="flex-1 min-w-[80px] p-2 bg-gray-100 text-gray-600 rounded-lg font-bold hover:bg-gray-200 transition"><i class="fas fa-image mb-1 block"></i> صورة</button>
+                        <button type="button" onclick="setContentType('pdf')" id="typeBtn_pdf" class="flex-1 min-w-[80px] p-2 bg-gray-100 text-gray-600 rounded-lg font-bold hover:bg-gray-200 transition"><i class="fas fa-file-pdf mb-1 block"></i> PDF</button>
+                        <button type="button" onclick="setContentType('video')" id="typeBtn_video" class="flex-1 min-w-[80px] p-2 bg-gray-100 text-gray-600 rounded-lg font-bold hover:bg-gray-200 transition"><i class="fas fa-play mb-1 block"></i> فيديو</button>
+                        <button type="button" onclick="setContentType('quiz')" id="typeBtn_quiz" class="flex-1 min-w-[80px] p-2 bg-gray-100 text-gray-600 rounded-lg font-bold hover:bg-gray-200 transition"><i class="fas fa-question-circle mb-1 block"></i> كويز</button>
+                    </div>
+                    <input type="hidden" id="contentTypeSelect" value="text">
+                </div>
+
+                <div id="inputGroup_text" class="content-input-group">
+                    <label class="block font-bold mb-2">النص</label>
+                    <div class="border border-gray-300 rounded-lg overflow-hidden">
+                        <div class="bg-gray-50 border-b border-gray-300 p-2 flex gap-2 flex-wrap">
+                            <button type="button" onclick="execRichText('bold')" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-100 font-bold">B</button>
+                            <button type="button" onclick="execRichText('underline')" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-100 underline">U</button>
+                            <button type="button" onclick="execRichText('foreColor', '#e53e3e')" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-100 text-red-500"><i class="fas fa-palette"></i></button>
+                            <button type="button" onclick="execRichText('foreColor', '#3182ce')" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-100 text-blue-500"><i class="fas fa-palette"></i></button>
+                            <button type="button" onclick="execRichText('foreColor', '#38a169')" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-100 text-green-500"><i class="fas fa-palette"></i></button>
+                            <button type="button" onclick="execRichText('foreColor', '#805ad5')" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-100 text-purple-500"><i class="fas fa-palette"></i></button>
+                            <button type="button" onclick="execRichText('foreColor', '#dd6b20')" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-100 text-orange-500"><i class="fas fa-palette"></i></button>
+                            <button type="button" onclick="execRichText('foreColor', '#1f2937')" class="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-100 text-gray-800"><i class="fas fa-palette"></i></button>
+                        </div>
+                        <div id="richTextEditor" contenteditable="true" class="w-full p-4 min-h-[150px] max-h-[300px] overflow-y-auto bg-white text-gray-800 outline-none text-right prose" dir="rtl"></div>
+                    </div>
+                </div>
+
+                <div id="inputGroup_url" class="content-input-group hidden">
+                    <label class="block font-bold mb-2">الرابط (URL)</label>
+                    <input type="url" id="contentUrlInput" class="w-full p-3 border border-gray-300 rounded-lg text-left text-gray-800" dir="ltr">
+                </div>
+
+                <div id="inputGroup_quiz" class="content-input-group hidden space-y-4">
+                    <div>
+                        <label class="block font-bold mb-2">السؤال</label>
+                        <input type="text" id="quizQuestion" class="w-full p-3 border border-gray-300 rounded-lg text-gray-800">
+                    </div>
+                    <div id="quizOptionsContainer" class="space-y-3"></div>
+                    <button type="button" onclick="addQuizOptionInput()" class="text-primary font-bold border border-primary px-4 py-2 rounded">+ إضافة خيار</button>
+                </div>
+            </div>
+            <div class="p-6 border-t border-gray-100">
+                <button onclick="saveContent()" class="w-full bg-primary text-white py-4 rounded-xl font-bold text-xl">حفظ المحتوى</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="contentViewerModal" class="modal fixed inset-0 z-50 items-center justify-center p-4 bg-black/90">
+        <button onclick="closeModal('contentViewerModal')" class="fixed top-4 right-4 text-white text-3xl hover:text-red-500 z-[70] bg-black/60 hover:bg-black/80 w-12 h-12 rounded-full flex items-center justify-center backdrop-blur shadow-lg transition"><i class="fas fa-times"></i></button>
+        <div id="viewerContainer" class="w-full max-w-5xl max-h-[90vh] flex items-center justify-center overflow-auto relative"></div>
+    </div>
+
+    <script>
+
+        function setContentType(type) {
+            document.getElementById('contentTypeSelect').value = type;
+            const types = ['text', 'quiz', 'pdf', 'video', 'image'];
+            types.forEach(t => {
+                const btn = document.getElementById('typeBtn_' + t);
+                if(t === type) {
+                    btn.className = "flex-1 min-w-[80px] p-2 bg-primary text-white rounded-lg font-bold transition";
+                } else {
+                    btn.className = "flex-1 min-w-[80px] p-2 bg-gray-100 text-gray-600 rounded-lg font-bold hover:bg-gray-200 transition";
+                }
+            });
+            toggleContentInputs();
+        }
+        
+        window.execRichText = function(cmd, val=null) {
+            try { document.execCommand(cmd, false, val); } catch (e) { console.error('Methodology Save Error:', e); alert('خطأ: ' + (e.message || 'فشل الحفظ')); }
+        }
+        
+        window.execRichTextMethodology = function(cmd, val=null) {
+            try { 
+                const editor = document.getElementById('methodologyContentEditor');
+                editor.focus();
+                document.execCommand(cmd, false, val); 
+            } catch (e) { console.error('Methodology Save Error:', e); alert('خطأ: ' + (e.message || 'فشل الحفظ')); }
+        }
+
+        window.currentEditingMethodologyId = null;
+
+        window.editMethodology = function(id) {
+            const m = window.adminMethodologies.find(x => x.id === id);
+            if(!m) return;
+            window.currentEditingMethodologyId = id;
+            document.getElementById('methodologyTitle').value = m.title;
+            document.getElementById('methodologyContentEditor').innerHTML = m.content;
+            document.getElementById('saveMethodologyBtn').innerText = 'تحديث المنهجية';
+            document.getElementById('methodologiesTab').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.saveMethodology = async function() {
+            const title = document.getElementById('methodologyTitle').value.trim();
+            const content = document.getElementById('methodologyContentEditor').innerHTML.trim();
+            if(!title || !content || content === '<br>') { alert('يرجى كتابة عنوان ومحتوى المنهجية'); return; }
+            
+            try {
+                let error;
+                if(window.currentEditingMethodologyId) {
+                    const res = await window.supabaseInstance.from('methodologies').update({ title, content }).eq('id', window.currentEditingMethodologyId);
+                    error = res.error;
+                } else {
+                    const res = await window.supabaseInstance.from('methodologies').insert([{ title, content }]);
+                    error = res.error;
+                }
+                
+                if(error) throw error;
+                
+                document.getElementById('methodologyTitle').value = '';
+                document.getElementById('methodologyContentEditor').innerHTML = '';
+                window.currentEditingMethodologyId = null;
+                document.getElementById('saveMethodologyBtn').innerText = 'نشر المنهجية';
+                
+                renderAdminMethodologies();
+            renderAdminGames();
+                alert('تم الحفظ بنجاح');
+            } catch(e) {
+                console.error('Methodology Save Error:', e);
+                alert('خطأ في الحفظ: ' + (e.message || 'يرجى المحاولة مرة أخرى'));
+            }
+        }
+
+        window.deleteMethodology = async function(id) {
+            if(!confirm('هل أنت متأكد من حذف هذه المنهجية؟')) return;
+            try {
+                const { error } = await window.supabaseInstance.from('methodologies').delete().eq('id', id);
+                if(error) throw error;
+                renderAdminMethodologies();
+            renderAdminGames();
+            } catch(e) {
+                console.error('Methodology Save Error:', e); alert('خطأ: ' + (e.message || 'فشل الحفظ'));
+            }
+        }
+
+        window.renderAdminMethodologies = async function() {
+            const { data: methodologies } = await window.supabaseInstance.from('methodologies').select('*').order('created_at', { ascending: false });
+            window.adminMethodologies = methodologies;
+            if(!methodologies || methodologies.length === 0) { 
+                document.getElementById('adminMethodologiesContainer').innerHTML = '<div class="text-center p-8 bg-gray-50 rounded-xl font-bold text-gray-500">لا توجد منهجيات حاليا</div>'; 
+                return; 
+            }
+            
+            document.getElementById('adminMethodologiesContainer').className = "flex flex-wrap gap-4";
+            document.getElementById('adminMethodologiesContainer').innerHTML = methodologies.map(m => `
+                <div class="relative group bg-blue-900 text-white border-2 border-blue-900 px-6 py-4 rounded-2xl text-xl font-bold shadow-lg transition-transform hover:-translate-y-1 w-[45%] md:w-auto md:min-w-[200px] flex-none flex flex-col items-center justify-center gap-3 overflow-hidden cursor-pointer" onclick="openAdminMethodologyArticle('${m.id}')">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                    <i class="fas fa-lightbulb text-yellow-400 text-4xl drop-shadow-[0_0_8px_rgba(250,204,21,0.6)] group-hover:scale-110 transition-transform pointer-events-none"></i>
+                    <span class="z-10 text-center pointer-events-none">${m.title}</span>
+                    
+                    <div class="absolute inset-0 bg-black/60 flex flex-wrap items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20 content-center p-2 rounded-2xl pointer-events-none">
+                        <button onclick="event.stopPropagation(); editMethodology('${m.id}')" class="pointer-events-auto w-10 h-10 bg-white rounded-full text-blue-600 hover:bg-blue-50 shadow-lg flex items-center justify-center transition" title="تعديل"><i class="fas fa-edit"></i></button>
+                        <button onclick="event.stopPropagation(); deleteMethodology('${m.id}')" class="pointer-events-auto w-10 h-10 bg-white rounded-full text-red-600 hover:bg-red-50 shadow-lg flex items-center justify-center transition" title="حذف"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.studentMethodologies = [];
+        window.renderStudentMethodologies = async function() {
+            const { data: methodologies } = await window.supabaseInstance.from('methodologies').select('*').order('created_at', { ascending: false });
+            window.adminMethodologies = methodologies;
+            if(!methodologies) return;
+            window.studentMethodologies = methodologies;
+            
+            if(methodologies.length === 0) {
+                document.getElementById('studentMethodologiesContainer').innerHTML = '<div class="w-full text-center p-8 bg-white dark:bg-gray-800 rounded-xl font-bold text-gray-500">لا توجد منهجيات متوفرة حاليا</div>';
+                return;
+            }
+
+            document.getElementById('studentMethodologiesContainer').innerHTML = methodologies.map(m => `
+                <div onclick="openMethodologyArticle('${m.id}')" class="bg-blue-900 text-white border-2 border-blue-900 hover:bg-blue-800 px-6 py-4 rounded-2xl text-xl font-bold shadow-lg transition-transform hover:-translate-y-1 w-[45%] md:w-auto md:min-w-[200px] flex-none flex flex-col items-center justify-center gap-3 group relative overflow-hidden cursor-pointer">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                    <i class="fas fa-lightbulb text-yellow-400 text-4xl drop-shadow-[0_0_8px_rgba(250,204,21,0.6)] group-hover:scale-110 transition-transform pointer-events-none"></i>
+                    <span class="z-10 text-center pointer-events-none">${m.title}</span>
+                </div>
+            `).join('');
+        }
+
+        window.openAdminMethodologyArticle = function(id) {
+            console.log("Opening admin methodology", id);
+            const methodology = window.adminMethodologies.find(m => m.id === id);
+            if(!methodology) return;
+            
+            document.getElementById('methodologyArticleTitle').innerText = methodology.title;
+            document.getElementById('methodologyArticleContent').innerHTML = methodology.content;
+            
+            document.getElementById('studentMethodologyArticleView').classList.remove('hidden');
+        }
+
+        window.openMethodologyArticle = function(id) {
+            const methodology = window.studentMethodologies.find(m => m.id === id);
+            if(!methodology) return;
+            
+            document.getElementById('methodologyArticleTitle').innerText = methodology.title;
+            document.getElementById('methodologyArticleContent').innerHTML = methodology.content;
+            
+            document.getElementById('studentMethodologyArticleView').classList.remove('hidden');
+        }
+
+        window.closeMethodologyArticle = function() {
+            document.getElementById('studentMethodologyArticleView').classList.add('hidden');
+        }
+
+        window.execRichText_legacy_ignore = function(cmd, val=null) {
+            try {
+                document.execCommand(cmd, false, val);
+                const el = document.getElementById('contentHtml');
+                if(el) el.focus();
+            } catch(e) {}
+        };
+
+
+
+
+        window.onerror = function(msg, url, line) {
+            if(!msg.includes('supabase') && !msg.includes('Script error') && line !== 1 && line !== 0) {
+                const eb = document.getElementById('errorBanner');
+                if(eb) { eb.innerHTML = `خطأ تقني: ${msg} (السطر ${line})`; eb.classList.remove('hidden'); setTimeout(() => eb.classList.add('hidden'), 5000); }
+            }
+            return false;
+        };
+
+        function formatDateArabic(isoString) {
+            const date = new Date(isoString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}/${month}/${day} - ${hours}:${minutes}`;
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => { toast.classList.remove('show'); }, 3000);
+            }).catch(err => {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    const toast = document.getElementById('toast');
+                    toast.classList.add('show');
+                    setTimeout(() => { toast.classList.remove('show'); }, 3000);
+                } catch (err) {
+                    console.error('Fallback: Oops, unable to copy', err);
+                }
+                document.body.removeChild(textArea);
+            });
+        }
+
+        function syncThemeIcons() {
+            const isDark = window.isDarkMode;
+            ['themeIconLogin', 'themeIconAdmin', 'themeIconStudent'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    if(isDark) { el.classList.remove('fa-moon'); el.classList.add('fa-sun'); }
+                    else { el.classList.remove('fa-sun'); el.classList.add('fa-moon'); }
+                }
+            });
+        }
+
+        function toggleTheme() {
+            window.isDarkMode = !window.isDarkMode;
+            try { localStorage.setItem('fakhri_theme', window.isDarkMode ? 'dark' : 'light'); } catch(e) {}
+            if(window.isDarkMode) document.documentElement.classList.add('dark');
+            else document.documentElement.classList.remove('dark');
+            syncThemeIcons();
+        }
+
+        async function handleSafeLogin() {
+            const codeInput = document.getElementById('loginCode').value.trim();
+            const loginBtn = document.getElementById('loginBtn');
+            const spinner = document.getElementById('loginSpinner');
+            const btnText = document.getElementById('loginBtnText');
+            
+            if(!codeInput) return;
+
+            loginBtn.disabled = true;
+            if(spinner) { spinner.classList.remove('hidden'); spinner.style.display = 'inline-block'; }
+            if(btnText) btnText.innerText = 'جاري التحقق...';
+
+            try {
+                if(!window.supabaseInstance) throw new Error("قاعدة البيانات لم تجهز بعد، يرجى الانتظار.");
+
+                if(codeInput === 'adminpassword123' || codeInput === 'admin') {
+                    const { data, error } = await window.supabaseInstance.auth.signInWithPassword({
+                        email: 'admin@fakhriblogs.com', password: 'adminpassword123'
+                    });
+                    if (error) throw error;
+                    await checkUserRoleAndRedirect(data.user);
+                } else {
+                    const { data: codeData, error: codeError } = await window.supabaseInstance
+                        .from('login_codes')
+                        .select('code, is_active')
+                        .eq('code', codeInput)
+                        .eq('is_active', true)
+                        .maybeSingle();
+                    
+                    if(codeError || !codeData) {
+                        throw new Error("الكود غير صحيح أو غير نشط");
+                    }
+                    
+                    const email = `student_${codeInput.toLowerCase()}@fakhriblogs.com`;
+                    
+                    try {
+                        const { data: signInData, error: signInError } = await window.supabaseInstance.auth.signInWithPassword({
+                            email: email, password: codeInput
+                        });
+                        
+                        if(signInError) {
+                            const { data: signUpData, error: signUpError } = await window.supabaseInstance.auth.signUp({
+                                email: email, password: codeInput,
+                                options: { data: { role: 'student' } }
+                            });
+                            
+                            if(signUpError && !signUpError.message.includes('already registered')) throw signUpError;
+                            
+                            const { data: retrySignInData, error: retrySignInError } = await window.supabaseInstance.auth.signInWithPassword({
+                                email: email, password: codeInput
+                            });
+                            
+                            if(retrySignInError) throw retrySignInError;
+                            await checkUserRoleAndRedirect(retrySignInData.user);
+                        } else {
+                            await checkUserRoleAndRedirect(signInData.user);
+                        }
+                    } catch(authErr) {
+                        throw new Error("تعذر إنشاء الجلسة، حاول مرة أخرى");
+                    }
+                }
+            } catch (err) {
+                alert(err.message || 'الكود غير صحيح أو محظور');
+                console.error(err);
+            } finally {
+                loginBtn.disabled = false;
+                if(spinner) { spinner.classList.add('hidden'); spinner.style.display = 'none'; }
+                if(btnText) btnText.innerText = 'دخول الآن';
+            }
+        }
+
+        function switchView(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            const target = document.getElementById(viewId);
+            if (target) target.classList.add('active');
+            
+            // Fast execution without transition delay
+            requestAnimationFrame(() => {
+                if(viewId === 'adminView') showAdminTab('contentTab');
+                else if(viewId === 'studentView') showStudentTab('studentContentTab');
+            });
+        }
+
+        function showAdminTab(tabId) {
+            document.querySelectorAll('.admin-tab').forEach(t => {
+                t.classList.remove('active');
+                t.classList.add('hidden');
+            });
+            const tab = document.getElementById(tabId);
+            if(tab) { tab.classList.add('active'); tab.classList.remove('hidden'); }
+            document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+                btn.classList.remove('bg-white/20', 'bg-white', 'text-white', 'bg-primary');
+                if(btn.dataset.target === tabId) {
+                    if(btn.closest('nav')) btn.classList.add('bg-primary', 'text-white');
+                    else btn.classList.add('bg-white/20');
+                } else {
+                    if(btn.closest('nav')) btn.classList.add('text-primary');
+                }
+            });
+            if(tabId === 'blogsTab') renderAdminBlogs();
+            if(tabId === 'settingsTab') loadAdminSettings();
+            if(tabId === 'contentTab') { window.currentUnitId = null; window.currentParentButtonId = null; renderAdminUnits(); }
+            if(tabId === 'methodologiesTab') { if(typeof window.renderAdminMethodologies === 'function') window.renderAdminMethodologies(); }
+            if(tabId === 'gamesTab') { if(typeof window.renderAdminGameFolders === 'function') window.renderAdminGameFolders(); }
+            if(tabId === 'whatsappTab') { if(typeof window.loadWhatsappConfig === 'function') window.loadWhatsappConfig(); }
+        }
+
+        // Added back function specifically to reset grid securely
+        function resetStudentGrid() {
+            window.activeStudentUnitId = null;
+            window.studentNavStack = [];
+            const grid = document.getElementById('studentUnitsGrid');
+            const details = document.getElementById('studentUnitDetails');
+            if (grid) grid.classList.remove('hidden');
+            if (details) details.classList.add('hidden');
+            renderStudentUnits();
+        }
+
+        function showStudentTab(tabId) {
+            document.querySelectorAll('.student-tab').forEach(t => { t.classList.remove('active'); t.classList.add('hidden'); });
+            const actualTabId = (tabId === 'gamesTab') ? 'studentGamesTab' : tabId;
+            const target = document.getElementById(actualTabId);
+            if (target) { target.classList.add('active'); target.classList.remove('hidden'); }
+            
+            document.querySelectorAll('.student-tab-btn').forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-white', 'hover:bg-gray-100');
+                if(btn.dataset.target === tabId) btn.classList.add('bg-primary', 'text-white');
+                else btn.classList.add('text-primary', 'hover:bg-gray-100');
+            });
+            if(actualTabId === 'studentContentTab') resetStudentGrid();
+            if(actualTabId === 'studentMethodologiesTab') { if(typeof window.renderStudentMethodologies === 'function') window.renderStudentMethodologies(); }
+            if(actualTabId === 'studentGamesTab') { if(typeof window.renderStudentGames === 'function') window.renderStudentGames(); }
+            if(actualTabId === 'studentWhatsappTab') { if(typeof window.loadWhatsappConfig === 'function') window.loadWhatsappConfig(); }
+        }
+
+        function toggleAdminMobileMenu() {
+            const menu = document.getElementById('adminMobileNavMenu');
+            const icon = document.getElementById('adminMenuIcon');
+            if(menu) {
+                menu.classList.toggle('hidden');
+                if(icon) {
+                    if(menu.classList.contains('hidden')) {
+                        icon.classList.remove('fa-times'); icon.classList.add('fa-bars');
+                    } else {
+                        icon.classList.remove('fa-bars'); icon.classList.add('fa-times');
+                    }
+                }
+            }
+        }
+
+        function toggleStudentMobileMenu() {
+            const menu = document.getElementById('studentMobileNavMenu');
+            const icon = document.getElementById('studentMenuIcon');
+            if(menu) {
+                menu.classList.toggle('hidden');
+                if(icon) {
+                    if(menu.classList.contains('hidden')) {
+                        icon.classList.remove('fa-times'); icon.classList.add('fa-bars');
+                    } else {
+                        icon.classList.remove('fa-bars'); icon.classList.add('fa-times');
+                    }
+                }
+            }
+        }
+
+        window.closeModal = function(id) {
+            const modal = document.getElementById(id);
+            if(modal) modal.classList.remove('active');
+            if(id === 'contentViewerModal') document.getElementById('viewerContainer').innerHTML = ''; 
+        }
+
+        let quizOptionsCount = 2;
+        function toggleContentInputs() {
+            const type = document.getElementById('contentTypeSelect').value;
+            document.querySelectorAll('.content-input-group').forEach(el => el.classList.add('hidden'));
+            if(type === 'text') document.getElementById('inputGroup_text').classList.remove('hidden');
+            else if(type === 'quiz') document.getElementById('inputGroup_quiz').classList.remove('hidden');
+            else document.getElementById('inputGroup_url').classList.remove('hidden');
+        }
+
+        function renderQuizOptions() {
+            let html = '';
+            for(let i=0; i<quizOptionsCount; i++) {
+                html += `<div class="flex items-center gap-3">
+                    <input type="radio" name="quizCorrect" value="${i}" class="w-5 h-5 cursor-pointer" ${i===0?'checked':''}>
+                    <input type="text" id="quizOpt_${i}" placeholder="الخيار ${i+1}" class="flex-1 p-2 border border-gray-300 rounded-lg text-gray-800">
+                </div>`;
+            }
+            document.getElementById('quizOptionsContainer').innerHTML = html;
+        }
+
+        function addQuizOptionInput() { quizOptionsCount++; renderQuizOptions(); }
+
+        
+
+        window.currentZoom = 1;
+        function zoomImg(amount, reset=false) {
+            const img = document.getElementById('zoomableImg');
+            if(!img) return;
+            if(reset) window.currentZoom = 1;
+            else window.currentZoom += amount;
+            if(window.currentZoom < 0.5) window.currentZoom = 0.5;
+            if(window.currentZoom > 4) window.currentZoom = 4;
+            img.style.transform = `scale(${window.currentZoom})`;
+        }
+
+
+        function playAudioTone(isSuccess) {
+            try {
+                const actx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = actx.createOscillator();
+                const gain = actx.createGain();
+                osc.connect(gain); gain.connect(actx.destination);
+                osc.type = isSuccess ? 'sine' : 'sawtooth';
+                osc.frequency.setValueAtTime(isSuccess ? 800 : 200, actx.currentTime);
+                if(isSuccess) osc.frequency.setValueAtTime(1200, actx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.1, actx.currentTime);
+                osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.00001, actx.currentTime + 0.5);
+                osc.stop(actx.currentTime + 0.5);
+            } catch(e) {}
+        }
+
+        async function checkUserRoleAndRedirect(user) {
+            window.currentUser = user;
+            try {
+                let isAdmin = user.email === 'admin@fakhriblogs.com';
+
+                if (isAdmin) {
+                    window.currentUserRole = 'admin';
+                    switchView('adminView');
+                    renderAdminCodes(); renderAdminUnits(); renderAdminBlogs(); loadAdminSettings();
+                } else {
+                    window.currentUserRole = 'student';
+                    switchView('studentView');
+                    await applyStudentSettings(); await fetchStudentProfile(); await fetchStudentData();
+                    renderStudentUnits(); renderStudentBlogs();
+                }
+            } catch (err) { console.error("Role check error", err); }
+        }
+
+        async function logout() {
+            if(window.supabaseInstance) await window.supabaseInstance.auth.signOut();
+            window.currentUserRole = null; window.currentUser = null;
+            document.getElementById('loginCode').value = '';
+            switchView('loginView');
+        }
+
+        // ADMIN FUNCTIONS
+        async function generateCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; let code = '';
+            for(let i=0; i<8; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+            const { error } = await window.supabaseInstance.from('login_codes').insert([{ code }]);
+            if (error) alert("خطأ: " + error.message); else renderAdminCodes();
+        }
+
+        async function deactivateAllCodes() {
+            if(!confirm('تصفير جميع الأكواد؟')) return;
+            const { error } = await window.supabaseInstance.from('login_codes').update({ is_active: false }).eq('is_active', true);
+            if (error) alert("خطأ: " + error.message); else renderAdminCodes();
+        }
+
+        async function renderAdminCodes() {
+            const { data: codes, error } = await window.supabaseInstance.from('login_codes').select('*').order('created_at', { ascending: false });
+            if (error) return;
+            document.getElementById('activeCount').innerText = codes.filter(c => c.is_active).length;
+            document.getElementById('codesTableBody').innerHTML = codes.map(c => `
+                <tr class="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 align-middle">
+                    <td class="p-4 font-mono font-bold text-lg align-middle">
+                        <div class="flex items-center gap-3">
+                            ${c.code}
+                            <button onclick="copyToClipboard('${c.code}')" class="text-gray-400 hover:text-primary transition" title="نسخ الكود"><i class="fas fa-copy"></i></button>
+                        </div>
+                    </td>
+                    <td class="p-4 align-middle text-left" dir="ltr">
+                        <div class="inline-flex flex-col gap-1 items-center justify-center w-24">
+                            <span class="whitespace-nowrap ${c.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} px-2 py-0.5 rounded-full text-[11px] font-bold w-full text-center"><i class="fas ${c.is_active ? 'fa-check-circle' : 'fa-times-circle'} ml-1"></i> ${c.is_active ? 'نشط' : 'ملغى'}</span>
+                            <button onclick="viewStudentProfileFromAdmin('${c.code}')" class="text-[11px] bg-blue-600 text-white px-2 py-1 rounded-md font-bold hover:bg-blue-700 transition shadow-sm w-full text-center"><i class="fas fa-id-card ml-1"></i> معلومات</button>
+                        </div>
+                    </td>
+                </tr>`).join('');
+        }
+
+        window.currentUnitId = null;
+        window.currentParentButtonId = null;
+        window.navigationStack = [];
+
+        function updateBreadcrumb() {
+            const breadcrumb = document.getElementById('breadcrumbNav');
+            const container = document.getElementById('breadcrumbContainer');
+            
+            if(window.navigationStack.length === 0) {
+                breadcrumb.classList.add('hidden');
+                return;
+            }
+            
+            breadcrumb.classList.remove('hidden');
+            container.innerHTML = window.navigationStack.map((item, idx) => {
+                const isLast = idx === window.navigationStack.length - 1;
+                return `<button onclick="navigateToLevel(${idx})" class="flex items-center gap-2 ${isLast ? 'text-primary font-bold' : 'text-gray-500 hover:text-primary'}">
+                    <i class="fas ${item.icon}"></i>
+                    <span>${item.title}</span>
+                    ${!isLast ? '<i class="fas fa-chevron-left text-gray-400 mr-2"></i>' : ''}
+                </button>`;
+            }).join('');
+        }
+
+        function navigateBack() {
+            if (window.navigationStack.length <= 1) {
+                navigateToLevel(0);
+            } else {
+                navigateToLevel(window.navigationStack.length - 2); 
+            }
+        }
+
+        function navigateToLevel(level) {
+            if (level === 0) {
+                window.navigationStack = [];
+                window.currentUnitId = null;
+                window.currentParentButtonId = null;
+                renderAdminUnits();
+            } else {
+                window.navigationStack = window.navigationStack.slice(0, level);
+                const target = window.navigationStack[level - 1];
+                window.currentUnitId = target.unitId;
+                window.currentParentButtonId = target.parentId || null;
+                renderAdminButtons(target.unitId, target.parentId);
+            }
+            updateBreadcrumb();
+        }
+
+        async function createUnit() {
+            const title = document.getElementById('unitTitle').value;
+            const bgImg = document.getElementById('unitBgImage').value;
+            const { data: units } = await window.supabaseInstance.from('units').select('order_index');
+            const order = units && units.length > 0 ? Math.max(...units.map(u => u.order_index)) + 1 : 0;
+            const { error } = await window.supabaseInstance.from('units').insert([{ title, bg_image_url: bgImg, order_index: order }]);
+            if (error) alert(error.message); else { document.getElementById('unitTitle').value = ''; document.getElementById('unitBgImage').value = ''; renderAdminUnits(); }
+        }
+
+        async function renderAdminUnits() {
+            const { data: units } = await window.supabaseInstance.from('units').select('*').order('order_index', { ascending: true });
+            if(!units) return;
+
+            document.getElementById('unitCreateForm').classList.remove('hidden');
+            document.getElementById('adminUnitsContainer').classList.remove('hidden');
+            document.getElementById('adminButtonsContainer').classList.add('hidden');
+            
+            window.navigationStack = [];
+            updateBreadcrumb();
+
+            
+            const c = document.getElementById('adminUnitsContainer');
+            c.className = '';
+            c.classList.add('grid', 'grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-3', 'gap-6');
+
+            document.getElementById('adminUnitsContainer').innerHTML = units.map(u => `
+                <div onclick="enterUnit('${u.id}', '${u.title.replace(/'/g, "\\'")}')" class="relative overflow-hidden rounded-2xl shadow-md border border-gray-200 cursor-pointer group hover:shadow-xl hover:-translate-y-1 transition-all h-48 bg-gray-100">
+                    ${u.bg_image_url ? `<img src="${u.bg_image_url}" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-500 group-hover:scale-110">` : ''}
+                    <div class="absolute inset-0 bg-gradient-to-t from-primary/90 to-black/30 z-10 pointer-events-none"></div>
+                    
+                    <div class="absolute top-4 left-4 z-30 flex gap-4">
+                        <button onclick="event.stopPropagation(); openEditUnitModal('${u.id}', '${u.title.replace(/'/g, "\\'")}', '${(u.bg_image_url || '').replace(/'/g, "\\'")}')" class="text-white hover:text-blue-300 transition text-xl drop-shadow-md" title="تعديل"><i class="fas fa-edit"></i></button>
+                        <button onclick="event.stopPropagation(); deleteUnit('${u.id}')" class="text-white hover:text-red-300 transition text-xl drop-shadow-md" title="حذف"><i class="fas fa-trash"></i></button>
+                    </div>
+
+                    <div class="absolute inset-0 flex flex-col justify-end p-6 z-20 pointer-events-none">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/30 shrink-0">
+                                <i class="fas fa-book text-white text-2xl"></i>
+                            </div>
+                            <h3 class="text-white text-2xl font-bold font-sans drop-shadow-md leading-tight w-full truncate" dir="rtl">${u.title}</h3>
+                        </div>
+                    </div>
+                </div>`).join('');
+        }
+        
+        function openEditUnitModal(id, currentTitle, currentBg) {
+            const newTitle = prompt('تعديل اسم المدونة:', currentTitle);
+            if (newTitle === null || !newTitle.trim()) return;
+            const newBg = prompt('تعديل رابط صورة الغلاف (اختياري):', currentBg);
+            if (newBg === null) return;
+            
+            updateUnit(id, newTitle.trim(), newBg.trim());
+        }
+
+        async function updateUnit(id, title, bg_image_url) {
+            const { error } = await window.supabaseInstance.from('units').update({ title, bg_image_url }).eq('id', id);
+            if(error) alert(error.message); else renderAdminUnits();
+        }
+
+        function enterUnit(unitId, unitTitle) {
+            window.currentUnitId = unitId;
+            window.currentParentButtonId = null;
+            window.navigationStack = [{ title: unitTitle, unitId: unitId, parentId: null, icon: 'fa-book' }];
+            updateBreadcrumb();
+            renderAdminButtons(unitId, null);
+        }
+
+        async function renderAdminButtons(unitId, parentButtonId) {
+            const { data: buttons } = await window.supabaseInstance.from('buttons').select('*').order('order_index', { ascending: true });
+            const { data: contents } = await window.supabaseInstance.from('contents').select('*');
+            if(!buttons || !contents) return;
+
+            document.getElementById('unitCreateForm').classList.add('hidden');
+            document.getElementById('adminUnitsContainer').classList.add('hidden');
+            document.getElementById('adminButtonsContainer').classList.remove('hidden');
+
+            const currentButtons = buttons.filter(b => b.unit_id === unitId && (parentButtonId ? b.parent_button_id === parentButtonId : !b.parent_button_id));
+
+            let html = `<div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-600 mb-6">
+                <h3 class="text-lg font-bold mb-4">إضافة تبويب جديد</h3>
+                <div class="flex flex-col gap-4">
+                    <input type="text" id="newBtnTitle_current" placeholder="اسم التبويب" class="p-4 border border-gray-300 rounded-lg w-full text-gray-800 text-lg">
+                    <div class="flex flex-col md:flex-row gap-3">
+                        <div class="flex flex-1 gap-2 bg-gray-50 dark:bg-gray-800 p-1 rounded-lg border border-gray-200 dark:border-gray-600">
+                            <button type="button" onclick="selectBtnType('general')" id="typeSelector_general" class="flex-1 p-3 bg-primary text-white shadow rounded-md font-bold transition flex items-center justify-center gap-2"><i class="fas fa-folder text-yellow-400"></i> عام (مجلد)</button>
+                            <button type="button" onclick="selectBtnType('specific')" id="typeSelector_specific" class="flex-1 p-3 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md font-bold transition flex items-center justify-center gap-2"><i class="fas fa-file-alt text-blue-500"></i> خاص (محتوى)</button>
+                            <input type="hidden" id="newBtnType_current" value="general">
+                        </div>
+                        <button onclick="addButton('${unitId}', ${parentButtonId ? `'${parentButtonId}'` : 'null'})" class="bg-primary text-white px-8 py-3 rounded-lg font-bold hover:opacity-90 shadow-md text-lg"><i class="fas fa-plus ml-2"></i> إنشاء التبويب</button>
+                    </div>
+                </div>
+            </div>`;
+
+            html += `<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6">`;
+            html += currentButtons.map(btn => {
+                const content = contents.find(c => c.button_id === btn.id);
+                
+                if(btn.type === 'general') {
+                    return `<div class="relative group aspect-square w-full h-full">
+                        <button onclick="enterButton('${btn.id}', '${btn.title.replace(/'/g, "\'")}', '${unitId}')" class="bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700 text-white p-2 rounded-2xl shadow-md border-none hover:-translate-y-1 transition-all w-full h-full flex flex-col items-center justify-center gap-2 text-center overflow-hidden">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                                <i class="fas fa-folder text-white text-xl md:text-2xl"></i>
+                            </div>
+                            <span class="text-sm md:text-base font-semibold line-clamp-2 px-2 mt-1">${btn.title}</span>
+                        </button>
+                        
+                        <div class="absolute inset-0 bg-black/60 flex flex-wrap items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20 content-center p-2 rounded-2xl pointer-events-none">
+                            <button onclick="editButton('${btn.id}', '${btn.title.replace(/'/g, "\'")}', 'general', event)" class="pointer-events-auto w-8 h-8 bg-white rounded-full text-blue-600 hover:bg-blue-50 shadow-lg flex items-center justify-center transition" title="تعديل"><i class="fas fa-pen"></i></button>
+                            <button onclick="event.stopPropagation(); deleteButton('${btn.id}')" class="pointer-events-auto w-8 h-8 bg-white rounded-full text-red-600 hover:bg-red-50 shadow-lg flex items-center justify-center transition" title="حذف"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>`;
+                } else {
+                    // specific button styling matching student view
+                    let iconClass = 'fa-hand-pointer'; let colorClass = 'text-accent'; let bgClass = 'bg-gray-50 dark:bg-gray-800'; let textColor = 'text-gray-800 dark:text-white'; let iconBg = 'bg-gray-100 dark:bg-gray-700';
+                    
+                    if(!content) {
+                        iconClass = 'fa-file-alt'; colorClass = 'text-gray-400';
+                        return `<div class="relative group aspect-square w-full h-full">
+                            <button onclick="openAddContentModal('${btn.id}')" class="bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-500 p-2 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 hover:border-primary transition-all w-full h-full flex flex-col items-center justify-center gap-2 text-center overflow-hidden">
+                                <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0">
+                                    <i class="fas ${iconClass} ${colorClass} text-xl md:text-2xl"></i>
+                                </div>
+                                <span class="text-sm md:text-base font-semibold line-clamp-2 mt-1">${btn.title}</span>
+                            </button>
+                            
+                            <div class="absolute inset-0 bg-black/60 flex flex-wrap items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20 content-center p-2 rounded-2xl pointer-events-none">
+                                <button onclick="openAddContentModal('${btn.id}')" class="pointer-events-auto w-8 h-8 bg-blue-500 rounded-full text-white hover:bg-blue-600 shadow-lg flex items-center justify-center transition" title="إضافة محتوى"><i class="fas fa-plus"></i></button>
+                                <button onclick="editButton('${btn.id}', '${btn.title.replace(/'/g, "\'")}', 'specific', event)" class="pointer-events-auto w-8 h-8 bg-white rounded-full text-blue-600 hover:bg-blue-50 shadow-lg flex items-center justify-center transition" title="تعديل"><i class="fas fa-pen"></i></button>
+                                <button onclick="event.stopPropagation(); deleteButton('${btn.id}')" class="pointer-events-auto w-8 h-8 bg-white rounded-full text-red-600 hover:bg-red-50 shadow-lg flex items-center justify-center transition" title="حذف"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>`;
+                    }
+                    
+                    if(content.type === 'pdf') { 
+                        iconClass = 'fa-file-pdf'; 
+                        colorClass = 'text-white'; textColor = 'text-white'; iconBg = 'bg-white/20';
+                        bgClass = 'bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'; 
+                    }
+                    else if(content.type === 'video') { 
+                        iconClass = 'fa-play'; 
+                        colorClass = 'text-white'; textColor = 'text-white'; iconBg = 'bg-white/20';
+                        bgClass = 'bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700'; 
+                    }
+                    else if(content.type === 'image') { 
+                        iconClass = 'fa-image'; 
+                        colorClass = 'text-white'; textColor = 'text-white'; iconBg = 'bg-white/20';
+                        bgClass = 'bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700'; 
+                    }
+                    else if(content.type === 'quiz') { 
+                        iconClass = 'fa-question-circle'; 
+                        colorClass = 'text-white'; textColor = 'text-white'; iconBg = 'bg-white/20';
+                        bgClass = 'bg-purple-500 hover:bg-purple-600 dark:bg-purple-600 dark:hover:bg-purple-700'; 
+                    }
+                    else if(content.type === 'text') { 
+                        iconClass = 'fa-pen'; 
+                        colorClass = 'text-white'; textColor = 'text-white'; iconBg = 'bg-white/20';
+                        bgClass = 'bg-orange-500 hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700'; 
+                    }
+                    
+                    return `<div class="relative group aspect-square w-full h-full">
+                        <button class="${bgClass} ${textColor} p-2 rounded-2xl shadow-md border-none hover:-translate-y-1 transition-all w-full h-full flex flex-col items-center justify-center gap-2 text-center overflow-hidden">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full ${iconBg} flex items-center justify-center shrink-0">
+                                <i class="fas ${iconClass} ${colorClass} text-xl md:text-2xl"></i>
+                            </div>
+                            <span class="text-sm md:text-base font-semibold line-clamp-2 mt-1">${btn.title}</span>
+                        </button>
+                        
+                        <div class="absolute inset-0 bg-black/60 flex flex-wrap items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20 content-center p-2 rounded-2xl pointer-events-none">
+                            <button onclick="event.stopPropagation(); deleteContent('${content.id}')" class="pointer-events-auto w-8 h-8 bg-yellow-500 rounded-full text-white hover:bg-yellow-600 shadow-lg flex items-center justify-center transition" title="تفريغ المحتوى"><i class="fas fa-eraser"></i></button>
+                            <button onclick="editButton('${btn.id}', '${btn.title.replace(/'/g, "\'")}', 'specific', event)" class="pointer-events-auto w-8 h-8 bg-white rounded-full text-blue-600 hover:bg-blue-50 shadow-lg flex items-center justify-center transition" title="تعديل الاسم"><i class="fas fa-pen"></i></button>
+                            <button onclick="event.stopPropagation(); deleteButton('${btn.id}')" class="pointer-events-auto w-8 h-8 bg-white rounded-full text-red-600 hover:bg-red-50 shadow-lg flex items-center justify-center transition" title="حذف الزر"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>`;
+                }
+            }).join('');
+            html += `</div>`;
+
+            document.getElementById('adminButtonsContainer').innerHTML = html;
+        }
+        
+        window.editButton = async function(id, oldTitle, btnType, event) {
+            if(event) event.stopPropagation();
+            if (btnType === 'general') {
+                const newTitle = prompt('تعديل اسم المجلد:', oldTitle);
+                if(newTitle === null || !newTitle.trim()) return;
+                const { error } = await window.supabaseInstance.from('buttons').update({ title: newTitle.trim() }).eq('id', id);
+                if(error) alert(error.message); else renderAdminButtons(window.currentUnitId, window.currentParentButtonId);
+            } else {
+                // Open addContentModal in edit mode
+                window.editingButtonId = id;
+                document.getElementById('contentBtnTitle').value = oldTitle;
+                
+                // Try to find content
+                const [cRes] = await Promise.all([window.supabaseInstance.from('contents').select('*').eq('button_id', id).maybeSingle()]);
+                const content = cRes.data;
+                
+                if (content) {
+                    setContentType(content.type);
+                    if (content.type === 'text') {
+                        const el = document.getElementById('contentHtml') || document.getElementById('richTextEditor');
+                        if(el) el.innerHTML = content.data.html || content.data.text || '';
+                    } else if (content.type === 'quiz') {
+                        document.getElementById('quizQuestion').value = content.data.question || '';
+                        window.quizOptionsCount = (content.data.options && content.data.options.length) || 2;
+                        renderQuizOptions();
+                        setTimeout(() => {
+                            if(content.data.options) {
+                                content.data.options.forEach((opt, idx) => {
+                                    const inp = document.getElementById('quizOpt_' + idx);
+                                    if(inp) inp.value = opt.text || opt;
+                                    if(opt.isCorrect) {
+                                        const radios = document.getElementsByName('quizCorrect');
+                                        if(radios[idx]) radios[idx].checked = true;
+                                    }
+                                });
+                            }
+                        }, 50);
+                    } else {
+                        const inpUrl = document.getElementById('contentUrlInput') || document.getElementById('contentUrl');
+                        if(inpUrl) inpUrl.value = content.data.url || '';
+                    }
+                } else {
+                    setContentType('text');
+                    const el = document.getElementById('contentHtml') || document.getElementById('richTextEditor');
+                    if(el) el.innerHTML = '';
+                    const inpUrl = document.getElementById('contentUrlInput') || document.getElementById('contentUrl');
+                    if(inpUrl) inpUrl.value = '';
+                }
+                
+                document.getElementById('addContentModal').classList.add('active');
+            }
+        }
+
+        function enterButton(buttonId, buttonTitle, unitId) {
+            window.currentParentButtonId = buttonId;
+            // Prevent pushing duplicate folder if double-clicked
+            if(window.navigationStack.length > 0) {
+                const last = window.navigationStack[window.navigationStack.length - 1];
+                if(last.parentId === buttonId) return;
+            }
+            window.navigationStack.push({ title: buttonTitle, unitId: unitId, parentId: buttonId, icon: 'fa-folder' });
+            updateBreadcrumb();
+            renderAdminButtons(unitId, buttonId);
+        }
+
+        async function addButton(unitId, parentId) {
+            const titleInput = document.getElementById('newBtnTitle_current');
+            const typeSelect = document.getElementById('newBtnType_current'); 
+            const title = titleInput ? titleInput.value : '';
+            const type = typeSelect ? typeSelect.value : 'specific'; 
+            if(!title) return alert('أدخل اسم الزر');
+            const { data: existingBtns } = await window.supabaseInstance.from('buttons').select('order_index').eq(parentId ? 'parent_button_id' : 'unit_id', parentId || unitId);
+            const order = existingBtns && existingBtns.length > 0 ? Math.max(...existingBtns.map(b => b.order_index)) + 1 : 0;
+            const { error } = await window.supabaseInstance.from('buttons').insert([{ unit_id: unitId, parent_button_id: parentId, type, title, order_index: order }]);
+            if (error) alert(error.message); else renderAdminButtons(unitId, parentId);
+        }
+
+        async function deleteUnit(id) { if(confirm('تأكيد حذف المدونة الفلسفية بالكامل مع محتواها؟')) { await window.supabaseInstance.from('units').delete().eq('id', id); renderAdminUnits(); } }
+        async function deleteButton(id) { if(confirm('حذف التبويب؟')) { await window.supabaseInstance.from('buttons').delete().eq('id', id); renderAdminButtons(window.currentUnitId, window.currentParentButtonId); } }
+        async function deleteContent(id) { await window.supabaseInstance.from('contents').delete().eq('id', id); renderAdminButtons(window.currentUnitId, window.currentParentButtonId); }
+
+        function openAddContentModal(buttonId) {
+            document.getElementById('activeButtonIdForContent').value = buttonId;
+            document.getElementById('addContentModal').classList.add('active');
+            toggleContentInputs(); renderQuizOptions();
+        }
+
+        async function saveContent() {
+            const buttonId = window.editingButtonId || document.getElementById('activeButtonIdForContent').value;
+            const type = document.getElementById('contentTypeSelect').value;
+            const newTitle = document.getElementById('contentBtnTitle').value.trim();
+            
+            let data = {};
+            if(type === 'text') { data.text = document.getElementById('contentHtml') ? document.getElementById('contentHtml').innerHTML : document.getElementById('richTextEditor').innerHTML; } 
+            else if (type === 'quiz') {
+                data.question = document.getElementById('quizQuestion').value; data.options = [];
+                const checkedRadio = document.querySelector('input[name="quizCorrect"]:checked');
+                const correctIdx = checkedRadio ? parseInt(checkedRadio.value) : 0;
+                for(let i=0; i<window.quizOptionsCount || i<2; i++) {
+                    const el = document.getElementById(`quizOpt_${i}`);
+                    if(el && el.value) data.options.push({ text: el.value, isCorrect: i === correctIdx });
+                }
+            } else { data.url = document.getElementById('contentUrlInput') ? document.getElementById('contentUrlInput').value : document.getElementById('contentUrl').value; }
+            
+            try {
+                // Update title
+                if(newTitle) {
+                    await window.supabaseInstance.from('buttons').update({ title: newTitle }).eq('id', buttonId);
+                }
+                
+                // Upsert content
+                const existingContent = window.adminContents ? window.adminContents.find(c => c.button_id === buttonId) : null;
+                if(existingContent) {
+                    await window.supabaseInstance.from('contents').update({ type, data }).eq('id', existingContent.id);
+                } else {
+                    await window.supabaseInstance.from('contents').insert([{ button_id: buttonId, type, data }]);
+                }
+                
+                window.editingButtonId = null;
+                closeModal('addContentModal'); 
+                // Refresh data to show instantly
+                const [bRes, cRes] = await Promise.all([ window.supabaseInstance.from('buttons').select('*').order('order_index'), window.supabaseInstance.from('contents').select('*') ]);
+                window.adminButtons = bRes.data || []; window.adminContents = cRes.data || [];
+                renderAdminButtons(window.currentUnitId, window.currentParentButtonId);
+            } catch(err) {
+                alert(err.message);
+            }
+        }
+
+        async function postBlog() {
+            const text = document.getElementById('newBlogContent').value;
+            if(!text) return;
+            const { error } = await window.supabaseInstance.from('blogs').insert([{ content: text }]);
+            if (error) alert(error.message); else { document.getElementById('newBlogContent').value = ''; renderAdminBlogs(); }
+        }
+
+        async function renderAdminBlogs() {
+            const [bRes, cRes, lRes] = await Promise.all([ window.supabaseInstance.from('blogs').select('*').order('created_at', { ascending: false }), window.supabaseInstance.from('blog_comments').select('*').order('created_at', { ascending: true }), window.supabaseInstance.from('blog_likes').select('*') ]);
+            const blogs = bRes.data || [], comments = cRes.data || [], likes = lRes.data || [];
+            if(blogs.length === 0) { document.getElementById('adminBlogsContainer').innerHTML = '<div class="text-center p-8 bg-white font-bold text-gray-500 rounded-xl">لا توجد تدوينات حاليا</div>'; return; }
+            
+            document.getElementById('adminBlogsContainer').innerHTML = blogs.map(b => {
+                const bLikes = likes.filter(l => l.blog_id === b.id), bComments = comments.filter(c => c.blog_id === b.id);
+                const hasLiked = window.currentUser ? bLikes.some(l => l.user_id === window.currentUser.id) : false;
+                return `<div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden text-gray-800">
+                    <div class="p-4 flex justify-between items-center gap-4 bg-gray-50 dark:bg-transparent dark:border-gray-700 border-b border-gray-100">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xl"><i class="fas fa-feather"></i></div>
+                            <div>
+                                <h4 class="font-bold text-lg text-primary">مدونات فخري</h4>
+                                <p class="text-sm text-gray-500 font-bold">${formatDateArabic(b.created_at)}</p>
+                            </div>
+                        </div>
+                        <button onclick="confirmDeleteBlog('${b.id}')" class="text-primary hover:bg-blue-50 p-2 rounded-lg transition" title="حذف التدوينة"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <div class="p-6 text-xl leading-relaxed whitespace-pre-wrap font-medium">${b.content}</div>
+                    <div class="px-6 py-3 border-t border-gray-100 dark:border-gray-700 flex items-center gap-6 bg-gray-50/50 dark:bg-transparent">
+                        <button onclick="toggleLike('${b.id}', ${hasLiked})" class="${hasLiked ? 'text-primary' : 'text-gray-400 hover:text-primary'} font-bold flex items-center gap-2 transition"><i class="fas fa-thumbs-up"></i> (${bLikes.length})</button>
+                        <div class="text-gray-500 font-bold flex items-center gap-2"><i class="fas fa-comment"></i> (${bComments.length})</div>
+                    </div>
+                    <div class="p-4 bg-gray-50 dark:bg-transparent dark:border-gray-700 border-t border-gray-100 space-y-4">
+                        ${bComments.map(c => `<div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-xs"><i class="fas fa-user"></i></div><div class="bg-white border border-gray-200 rounded-2xl rounded-tr-none px-4 py-2 shadow-sm">${c.content}</div><button onclick="deleteComment('${c.id}')" class="text-red-400 text-xs"><i class="fas fa-trash"></i></button></div>`).join('')}
+                        <div class="flex gap-2 mt-4 pt-2">
+                            <input type="text" id="comment_${b.id}_admin" onkeypress="if(event.key === 'Enter') addComment('${b.id}', true)" placeholder="اكتب تعليقا..." class="flex-1 p-3 border border-gray-300 rounded-full focus:outline-none text-gray-800">
+                            <button onclick="addComment('${b.id}', true)" class="bg-primary text-white w-12 h-12 rounded-full flex items-center justify-center shadow-md hover:opacity-90"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div></div>`;
+            }).join('');
+        }
+
+        function confirmDeleteBlog(id) { if(confirm('تأكيد حذف التدوينة بالكامل؟')) deleteBlog(id); }
+        async function deleteBlog(id) { await window.supabaseInstance.from('blogs').delete().eq('id', id); renderAdminBlogs(); }
+
+        async function loadAdminSettings() {
+            try {
+                const { data, error } = await window.supabaseInstance.from('app_settings').select('*').eq('id', 1).maybeSingle();
+                if (data) { 
+                    document.getElementById('settingCoverImage').value = data.cover_image_url || ''; 
+                    document.getElementById('settingBgImage').value = data.bg_image_url || ''; 
+                    applyStudentSettings();
+                }
+            } catch(e) {}
+        }
+        
+        async function saveSettingsWithSpinner(btnEl) {
+            const textEl = btnEl.querySelector('.btn-text');
+            const spinner = btnEl.querySelector('.spinner-circle');
+            
+            btnEl.disabled = true;
+            textEl.innerText = "جاري الحفظ...";
+            spinner.classList.remove('hidden'); spinner.style.display = 'inline-block';
+
+            try {
+                const urlCover = document.getElementById('settingCoverImage').value.trim();
+                const urlBg = document.getElementById('settingBgImage').value.trim();
+                
+                // First try to update
+                let res = await window.supabaseInstance.from('app_settings').update({ cover_image_url: urlCover, bg_image_url: urlBg }).eq('id', 1);
+                
+                // If no rows updated (doesn't exist), try to insert
+                if (res.error || (res.data && res.data.length === 0)) {
+                    await window.supabaseInstance.from('app_settings').insert([{ id: 1, cover_image_url: urlCover, bg_image_url: urlBg }]);
+                }
+                
+                applyStudentSettings();
+                setTimeout(() => {
+                    textEl.innerText = "تم الحفظ بنجاح";
+                    spinner.classList.add('hidden'); spinner.style.display = 'none';
+                    setTimeout(() => {
+                        textEl.innerText = "حفظ الآن";
+                        btnEl.disabled = false;
+                    }, 2000);
+                }, 500);
+            } catch(e) {
+                alert("خطأ في الحفظ");
+                textEl.innerText = "حفظ الآن";
+                spinner.classList.add('hidden'); spinner.style.display = 'none';
+                btnEl.disabled = false;
+            }
+        }
+
+        
+        window.currentEditingGameId = null;
+
+        window.addGameOption = function() {
+            const container = document.getElementById('gameOptionsContainer');
+            const optCount = container.children.length;
+            const div = document.createElement('div');
+            div.className = 'flex gap-3 items-center';
+            div.innerHTML = `
+                <input type="radio" name="gameCorrectOption" value="${optCount}" class="w-5 h-5 text-purple-600 focus:ring-purple-500 cursor-pointer">
+                <input type="text" placeholder="الخيار ${optCount+1}..." class="flex-1 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:border-purple-500 outline-none dark:text-white game-option">
+                <button onclick="this.parentElement.remove()" class="text-red-400 hover:text-red-600 p-2"><i class="fas fa-times"></i></button>
+            `;
+            container.appendChild(div);
+        }
+
+        window.editGame = function(id) {
+            const g = window.adminGames.find(x => x.id === id);
+            if(!g) return;
+            window.currentEditingGameId = id;
+            document.getElementById('gameTitle').value = g.title;
+            document.getElementById('gameQuestion').value = g.question;
+            
+            const container = document.getElementById('gameOptionsContainer');
+            container.innerHTML = '';
+            
+            g.options.forEach((opt, idx) => {
+                const div = document.createElement('div');
+                div.className = 'flex gap-3 items-center';
+                div.innerHTML = `
+                    <input type="radio" name="gameCorrectOption" value="${idx}" ${g.correct_option === idx ? 'checked' : ''} class="w-5 h-5 text-purple-600 focus:ring-purple-500 cursor-pointer">
+                    <input type="text" value="${opt.replace(/"/g, '&quot;')}" class="flex-1 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:border-purple-500 outline-none dark:text-white game-option">
+                    ${idx > 1 ? `<button onclick="this.parentElement.remove()" class="text-red-400 hover:text-red-600 p-2"><i class="fas fa-times"></i></button>` : ''}
+                `;
+                container.appendChild(div);
+            });
+            
+            document.getElementById('saveGameBtn').innerHTML = '<i class="fas fa-save"></i> تحديث اللعبة';
+            document.getElementById('gamesTab').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.deleteGame = async function(id) {
+            if(!confirm('هل أنت متأكد من حذف هذه اللعبة؟')) return;
+            try {
+                const { error } = await window.supabaseInstance.from('philosophical_games').delete().eq('id', id);
+                if(error) throw error;
+                renderAdminGames();
+            } catch(e) {
+                console.error(e);
+                alert('خطأ أثناء الحذف');
+            }
+        }
+
+        window.saveGame = async function() {
+            const title = document.getElementById('gameTitle').value.trim();
+            const question = document.getElementById('gameQuestion').value.trim();
+            const optionInputs = document.querySelectorAll('.game-option');
+            const options = Array.from(optionInputs).map(i => i.value.trim()).filter(v => v !== '');
+            const correctRadio = document.querySelector('input[name="gameCorrectOption"]:checked');
+            
+            if(!title || !question || options.length < 2 || !correctRadio) {
+                alert('يرجى كتابة العنوان والسؤال وخيارين على الأقل وتحديد الإجابة الصحيحة');
+                return;
+            }
+            
+            let correct_option = parseInt(correctRadio.value);
+            const allRadios = Array.from(document.querySelectorAll('input[name="gameCorrectOption"]'));
+            let actualIndex = 0;
+            let foundCorrect = false;
+            for(let i=0; i<allRadios.length; i++) {
+                if(optionInputs[i].value.trim() !== '') {
+                    if(i === parseInt(correctRadio.value)) {
+                        correct_option = actualIndex;
+                        foundCorrect = true;
+                    }
+                    actualIndex++;
+                }
+            }
+            
+            if(!foundCorrect) correct_option = 0;
+
+            try {
+                let error;
+                if(window.currentEditingGameId) {
+                    const res = await window.supabaseInstance.from('philosophical_games').update({ title, question, options, correct_option }).eq('id', window.currentEditingGameId);
+                    error = res.error;
+                } else {
+                    const res = await window.supabaseInstance.from('philosophical_games').insert([{ title, question, options, correct_option, folder_id: window.activeGameFolderId }]);
+                    error = res.error;
+                }
+                
+                if(error) throw error;
+                
+                document.getElementById('gameTitle').value = '';
+                document.getElementById('gameQuestion').value = '';
+                document.getElementById('gameOptionsContainer').innerHTML = `
+                    <div class="flex gap-3 items-center">
+                        <input type="radio" name="gameCorrectOption" value="0" checked class="w-5 h-5 text-purple-600 focus:ring-purple-500 cursor-pointer">
+                        <input type="text" placeholder="الخيار الأول..." class="flex-1 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:border-purple-500 outline-none dark:text-white game-option">
+                    </div>
+                    <div class="flex gap-3 items-center">
+                        <input type="radio" name="gameCorrectOption" value="1" class="w-5 h-5 text-purple-600 focus:ring-purple-500 cursor-pointer">
+                        <input type="text" placeholder="الخيار الثاني..." class="flex-1 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:border-purple-500 outline-none dark:text-white game-option">
+                    </div>
+                `;
+                window.currentEditingGameId = null;
+                document.getElementById('saveGameBtn').innerHTML = '<i class="fas fa-paper-plane"></i> حفظ اللعبة';
+                
+                renderAdminGames();
+                alert('تم حفظ اللعبة بنجاح');
+            } catch(e) {
+                console.error(e);
+                alert('خطأ في الحفظ');
+            }
+        }
+
+        
+        window.adminGameFolders = [];
+        window.studentGameFolders = [];
+        window.activeGameFolderId = null;
+        window.currentEditingGameId = null;
+
+        window.editGameFolder = function(id, title) {
+            window.currentEditingGameFolderId = id;
+            document.getElementById('gameFolderTitle').value = title;
+            const modal = document.getElementById('createGameFolderModal');
+            modal.querySelector('h3').innerHTML = '<i class="fas fa-edit text-purple-500"></i> تعديل اسم الزر العام';
+            modal.querySelector('button.bg-purple-600').innerText = 'حفظ التعديلات';
+            modal.classList.remove('hidden');
+        };
+
+        window.openCreateGameFolder = function() {
+            window.currentEditingGameFolderId = null;
+            document.getElementById('gameFolderTitle').value = '';
+            const modal = document.getElementById('createGameFolderModal');
+            modal.querySelector('h3').innerHTML = '<i class="fas fa-folder-plus text-purple-500"></i> زر عام جديد للعبة';
+            modal.querySelector('button.bg-purple-600').innerText = 'حفظ الزر العام';
+            modal.classList.remove('hidden');
+        };
+        window.closeCreateGameFolder = function() {
+            document.getElementById('createGameFolderModal').classList.add('hidden');
+            window.currentEditingGameFolderId = null;
+        };
+        window.saveGameFolder = async function() {
+            const title = document.getElementById('gameFolderTitle').value.trim();
+            if(!title) return alert("يرجى إدخال اسم الزر العام");
+            
+            if(window.currentEditingGameFolderId) {
+                const { error } = await window.supabaseInstance.from('game_folders').update({ title }).eq('id', window.currentEditingGameFolderId);
+                if(error) alert("خطأ: " + error.message);
+                else {
+                    closeCreateGameFolder();
+                    renderAdminGameFolders();
+                }
+            } else {
+                const { error } = await window.supabaseInstance.from('game_folders').insert([{ title }]);
+                if(error) alert("خطأ: " + error.message);
+                else {
+                    closeCreateGameFolder();
+                    renderAdminGameFolders();
+                }
+            }
+        };
+        window.deleteGameFolder = async function(id) {
+            if(!confirm("هل أنت متأكد من حذف هذا الزر العام وكل الكويزات بداخله؟")) return;
+            const { error } = await window.supabaseInstance.from('game_folders').delete().eq('id', id);
+            if(error) alert("خطأ: " + error.message);
+            else renderAdminGameFolders();
+        };
+
+        window.openFolderQuizManager = function(folderId, folderTitle) {
+            window.activeGameFolderId = folderId;
+            document.getElementById('quizManagerTitle').innerHTML = `<i class="fas fa-folder-open text-purple-500"></i> كويزات: ${folderTitle}`;
+            document.getElementById('adminGamesQuizManager').classList.remove('hidden');
+            document.getElementById('adminGamesQuizManager').scrollIntoView({ behavior: 'smooth' });
+            resetGameForm();
+            renderAdminGames(folderId);
+        };
+        window.closeQuizManager = function() {
+            window.activeGameFolderId = null;
+            document.getElementById('adminGamesQuizManager').classList.add('hidden');
+        };
+        window.resetGameForm = function() {
+            window.currentEditingGameId = null;
+            document.getElementById('gameTitle').value = '';
+            document.getElementById('gameQuestion').value = '';
+            document.getElementById('gameOptionsContainer').innerHTML = `
+                <div class="flex gap-3 items-center">
+                    <input type="radio" name="gameCorrectOption" value="0" checked class="w-5 h-5 text-purple-600 focus:ring-purple-500 cursor-pointer">
+                    <input type="text" placeholder="الخيار الأول..." class="flex-1 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:border-purple-500 outline-none dark:text-white game-option">
+                </div>
+                <div class="flex gap-3 items-center">
+                    <input type="radio" name="gameCorrectOption" value="1" class="w-5 h-5 text-purple-600 focus:ring-purple-500 cursor-pointer">
+                    <input type="text" placeholder="الخيار الثاني..." class="flex-1 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:border-purple-500 outline-none dark:text-white game-option">
+                </div>
+            `;
+        };
+
+        window.renderAdminGameFolders = async function() {
+            const { data: folders } = await window.supabaseInstance.from('game_folders').select('*').order('created_at', { ascending: true });
+            window.adminGameFolders = folders || [];
+            const container = document.getElementById('adminGamesFoldersList');
+            if(!container) return;
+            
+            if(!folders || folders.length === 0) { 
+                container.innerHTML = '<div class="col-span-full text-center p-8 bg-gray-50 dark:bg-gray-800 rounded-xl font-bold text-gray-500">لا توجد أزرار عامة للألعاب. قم بإنشاء واحد الآن.</div>'; 
+                return; 
+            }
+            
+            container.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4';
+            container.innerHTML = folders.map(f => `
+                <div class="relative group">
+                    <button onclick="openFolderQuizManager('${f.id}', '${f.title}')" class="bg-gradient-to-br from-purple-800 to-purple-900 hover:from-purple-700 hover:to-purple-800 dark:from-gray-800 dark:to-gray-900 p-3 md:p-4 rounded-3xl shadow-lg transition transform hover:-translate-y-2 hover:shadow-xl hover:shadow-purple-500/20 w-full aspect-square flex flex-col items-center justify-center gap-3 overflow-hidden text-center">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full blur-2xl -mr-8 -mt-8 group-hover:bg-white/10 transition"></div>
+                        <div class="w-14 h-14 md:w-16 md:h-16 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm shadow-inner group-hover:scale-110 transition relative">
+                            <i class="fas fa-box text-2xl md:text-3xl text-purple-200"></i>
+                            <i class="fas fa-question text-lg md:text-xl absolute -top-2 -right-2 text-yellow-400 font-black filter drop-shadow-md animate-bounce"></i>
+                        </div>
+                        <span class="font-black text-sm md:text-base text-white group-hover:text-purple-100 transition px-1 line-clamp-2">${f.title}</span>
+                    </button>
+                    <div class="absolute top-2 left-2 flex gap-1 opacity-0 group-hover:opacity-100 transition">
+                        <button onclick="editGameFolder('${f.id}', '${f.title}')" class="bg-blue-500 text-white w-8 h-8 rounded-full shadow-md hover:bg-blue-600 transition flex items-center justify-center text-xs z-10"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteGameFolder('${f.id}')" class="bg-red-500 text-white w-8 h-8 rounded-full shadow-md hover:bg-red-600 transition flex items-center justify-center text-xs z-10"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+
+        window.renderAdminGames = async function(folderId = null) {
+            const targetFolder = folderId || window.activeGameFolderId;
+            if(!targetFolder) return;
+            
+            const { data: games } = await window.supabaseInstance.from('philosophical_games').select('*').eq('folder_id', targetFolder).order('created_at', { ascending: false });
+            window.adminGames = games || [];
+            const container = document.getElementById('adminGamesContainer');
+            if(!container) return;
+            
+            if(!games || games.length === 0) { 
+                container.innerHTML = '<div class="text-center p-8 bg-gray-50 dark:bg-gray-800 rounded-xl font-bold text-gray-500 border border-dashed border-gray-200 dark:border-gray-700">لا توجد كويزات داخل هذا الزر حاليا</div>'; 
+                return; 
+            }
+            
+            container.innerHTML = games.map(g => `
+                <div class="relative group">
+                    <button class="bg-gradient-to-br from-purple-800 to-purple-900 dark:from-gray-800 dark:to-gray-900 p-3 md:p-4 rounded-3xl shadow-lg transition transform hover:-translate-y-2 hover:shadow-xl hover:shadow-purple-500/20 w-full aspect-square flex flex-col items-center justify-center gap-3 overflow-hidden text-center border border-purple-700/50 dark:border-gray-700 cursor-default">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full blur-2xl -mr-8 -mt-8"></div>
+                        <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm shadow-inner relative">
+                            <i class="fas fa-gamepad text-2xl text-purple-200"></i>
+                        </div>
+                        <span class="font-bold text-sm md:text-base text-white px-1 line-clamp-2">${g.title}</span>
+                    </button>
+                    <div class="absolute top-2 left-2 flex gap-1 opacity-0 group-hover:opacity-100 transition">
+                        <button onclick="editGame('${g.id}')" class="bg-blue-500 text-white w-8 h-8 rounded-full shadow-md hover:bg-blue-600 transition flex items-center justify-center text-xs z-10" title="تعديل"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteGame('${g.id}')" class="bg-red-500 text-white w-8 h-8 rounded-full shadow-md hover:bg-red-600 transition flex items-center justify-center text-xs z-10" title="حذف"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        window.renderStudentGames = async function() {
+            const { data: folders } = await window.supabaseInstance.from('game_folders').select('*').order('created_at', { ascending: true });
+            window.studentGameFolders = folders || [];
+            
+            const quizzesView = document.getElementById('studentQuizzesView');
+            const foldersContainer = document.getElementById('studentGameFoldersContainer');
+            if(quizzesView) quizzesView.classList.add('hidden');
+            if(foldersContainer) foldersContainer.classList.remove('hidden');
+            
+            if(!foldersContainer) return;
+            
+            if(!folders || folders.length === 0) { 
+                foldersContainer.innerHTML = '<div class="col-span-full text-center p-12 bg-white/50 dark:bg-gray-800/50 backdrop-blur rounded-3xl border border-gray-100 dark:border-gray-700 font-bold text-gray-500">لا توجد ألعاب حاليا</div>'; 
+                return; 
+            }
+            
+            foldersContainer.innerHTML = folders.map(f => `
+                <button onclick="openStudentGameFolder('${f.id}', '${f.title}')" class="bg-gradient-to-br from-purple-800 to-purple-900 hover:from-purple-700 hover:to-purple-800 dark:from-gray-800 dark:to-gray-900 p-3 md:p-4 rounded-3xl shadow-lg transition transform hover:-translate-y-2 hover:shadow-xl hover:shadow-purple-500/20 w-full aspect-square flex flex-col items-center justify-center gap-3 group overflow-hidden relative text-center">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full blur-2xl -mr-8 -mt-8 group-hover:bg-white/10 transition"></div>
+                    <div class="w-14 h-14 md:w-16 md:h-16 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm shadow-inner group-hover:scale-110 transition relative">
+                        <i class="fas fa-box text-2xl md:text-3xl text-purple-200"></i>
+                        <i class="fas fa-question text-lg md:text-xl absolute -top-2 -right-2 text-yellow-400 font-black filter drop-shadow-md animate-bounce"></i>
+                    </div>
+                    <span class="font-black text-sm md:text-base text-white group-hover:text-purple-100 transition px-1 line-clamp-2">${f.title}</span>
+                </button>
+            `).join('');
+        };
+
+        window.openStudentGameFolder = async function(folderId, folderTitle) {
+            document.getElementById('studentGameFoldersContainer').classList.add('hidden');
+            document.getElementById('studentQuizzesView').classList.remove('hidden');
+            document.getElementById('studentActiveFolderName').innerText = `كويزات: ${folderTitle}`;
+            
+            const { data: games } = await window.supabaseInstance.from('philosophical_games').select('*').eq('folder_id', folderId).order('created_at', { ascending: false });
+            window.studentGames = games || [];
+            
+            const container = document.getElementById('studentGamesContainer');
+            if(!container) return;
+            
+            if(!games || games.length === 0) { 
+                container.innerHTML = '<div class="col-span-full text-center p-12 bg-white/50 dark:bg-gray-800/50 backdrop-blur rounded-3xl border border-gray-100 dark:border-gray-700 font-bold text-gray-500">هذا الزر فارغ حالياً</div>'; 
+                return; 
+            }
+            
+            container.innerHTML = games.map(g => `
+                <button onclick="openGamePlay('${g.id}')" class="bg-gradient-to-br from-purple-800 to-purple-900 hover:from-purple-700 hover:to-purple-800 dark:from-gray-800 dark:to-gray-900 p-3 md:p-4 rounded-3xl shadow-lg transition transform hover:-translate-y-2 hover:shadow-xl hover:shadow-purple-500/20 w-full aspect-square flex flex-col items-center justify-center gap-3 group overflow-hidden relative text-center border border-purple-700/50 dark:border-gray-700">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full blur-2xl -mr-8 -mt-8 group-hover:bg-white/10 transition"></div>
+                    <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm shadow-inner group-hover:scale-110 transition relative">
+                        <i class="fas fa-gamepad text-2xl text-purple-200"></i>
+                    </div>
+                    <span class="font-bold text-sm md:text-base text-white group-hover:text-purple-100 transition px-1 line-clamp-2">${g.title}</span>
+                </button>
+            `).join('');
+        };
+
+        window.backToGameFolders = function() {
+            document.getElementById('studentQuizzesView').classList.add('hidden');
+            document.getElementById('studentGameFoldersContainer').classList.remove('hidden');
+        };
+
+
+        
+        window.openGamePlay = function(id) {
+            const g = window.studentGames.find(x => x.id === id);
+            if(!g) return;
+            
+            const html = `
+                <div class="bg-gray-50 dark:bg-gray-900 w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden flex flex-col mx-4 my-8 relative z-10">
+                    <div class="bg-purple-600 border-b border-purple-500/20 p-6 flex justify-center items-center relative">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-2xl text-white shadow-inner">
+                                <i class="fas fa-gamepad"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-white tracking-wide">اختبار الألعاب</h3>
+                        </div>
+                    </div>
+                    <div class="p-6 md:p-10 bg-white dark:bg-gray-800 rounded-t-3xl -mt-4">
+                        <div class="text-center mb-10">
+                            <div class="inline-block bg-purple-50 dark:bg-gray-700 text-purple-600 dark:text-purple-300 font-bold px-4 py-1.5 rounded-full text-sm mb-6 border border-purple-100 dark:border-gray-600 shadow-sm">${g.title}</div>
+                            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-800 dark:text-gray-100 leading-relaxed"><span class="text-gray-400 dark:text-gray-500 font-normal">السؤال: </span>${g.question}</h2>
+                        </div>
+                        <div class="space-y-4" id="playGameOptions">
+                            ${g.options.map((opt, idx) => `
+                                <button onclick="checkGameAnswer('${id}', ${idx}, this)" id="gameOptionBtn_${idx}" class="w-full flex items-center p-5 text-xl font-bold border-2 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-2xl hover:border-primary dark:hover:border-primary hover:bg-purple-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 transition-all text-right group relative overflow-hidden shadow-sm hover:shadow-md game-option-btn">
+                                    <span class="w-10 h-10 shrink-0 rounded-full border-2 border-gray-200 dark:border-gray-600 flex items-center justify-center ml-5 group-hover:border-primary group-hover:text-primary dark:group-hover:text-white transition-colors text-lg option-icon-letter">${String.fromCharCode(65 + idx)}</span>
+                                    <span class="flex-1">${opt}</span>
+                                </button>
+                            `).join('')}
+                        </div>
+                        <div id="gameResultFeedback" class="w-full mt-6 hidden">
+                            <!-- Feedback loads here -->
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const view = document.getElementById('gamePlayView');
+            view.innerHTML = `
+                <div class="absolute inset-0 bg-gray-900/60 dark:bg-black/80 backdrop-blur-sm" onclick="closeGamePlay()"></div>
+                <button onclick="closeGamePlay()" class="absolute top-6 left-6 text-white bg-black/50 hover:bg-black w-14 h-14 rounded-full flex items-center justify-center transition-all z-20 shadow-xl border border-white/20 hover:rotate-90"><i class="fas fa-times text-2xl"></i></button>
+                ${html}
+            `;
+            view.className = 'fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto p-4';
+        };
+
+        window.closeGamePlay = function() {
+            document.getElementById('gamePlayView').classList.add('hidden');
+            document.getElementById('gamePlayView').innerHTML = ''; // clear content
+        };
+
+        window.checkGameAnswer = function(gameId, selectedIdx, btnElement) {
+            const g = window.studentGames.find(x => x.id === gameId);
+            if(!g) return;
+            
+            const buttons = document.querySelectorAll('.game-option-btn');
+            buttons.forEach(b => {
+                b.disabled = true;
+                b.classList.add('opacity-60');
+                b.classList.remove('hover:border-primary', 'hover:bg-purple-50', 'dark:hover:bg-gray-700', 'hover:shadow-md');
+            });
+            btnElement.classList.remove('opacity-60', 'border-gray-100', 'dark:border-gray-700', 'bg-white', 'dark:bg-gray-800');
+            
+            const feedback = document.getElementById('gameResultFeedback');
+            feedback.innerHTML = '';
+            feedback.classList.remove('hidden');
+            
+            const isCorrect = (selectedIdx === g.correct_option_index || selectedIdx === g.correct_option);
+            const letterSpan = btnElement.querySelector('.option-icon-letter');
+            
+            if(isCorrect) {
+                playAudioTone(true);
+                btnElement.classList.add('bg-green-50', 'dark:bg-green-900/30', 'border-green-500', 'text-green-800', 'dark:text-green-400', 'opacity-100', 'shadow-md');
+                if(letterSpan) {
+                    letterSpan.classList.remove('border-gray-200', 'dark:border-gray-600');
+                    letterSpan.classList.add('border-green-500', 'bg-green-500', 'text-white');
+                }
+                
+                feedback.innerHTML = `<div class="quiz-success-anim flex flex-col items-center gap-4 bg-green-50 dark:bg-green-900/20 p-6 rounded-2xl border border-green-100 dark:border-green-800/50"><div class="w-20 h-20 bg-green-100 dark:bg-green-800/50 rounded-full flex items-center justify-center shadow-inner"><i class="fas fa-trophy text-5xl trophy-icon text-green-500"></i></div><div class="text-green-600 dark:text-green-400 text-2xl font-black">أحسنت! إجابة صحيحة</div></div>`;
+            } else {
+                playAudioTone(false);
+                btnElement.classList.add('bg-red-50', 'dark:bg-red-900/30', 'border-red-500', 'text-red-800', 'dark:text-red-400', 'opacity-100', 'shadow-md');
+                if(letterSpan) {
+                    letterSpan.classList.remove('border-gray-200', 'dark:border-gray-600');
+                    letterSpan.classList.add('border-red-500', 'bg-red-500', 'text-white');
+                }
+                
+                // Show the correct one too
+                const correctIdx = g.correct_option !== undefined ? g.correct_option : g.correct_option_index;
+                if(correctIdx !== undefined && buttons[correctIdx]) {
+                    const correctBtn = buttons[correctIdx];
+                    correctBtn.classList.remove('opacity-60', 'border-gray-100', 'dark:border-gray-700', 'bg-white', 'dark:bg-gray-800');
+                    correctBtn.classList.add('bg-green-50', 'dark:bg-green-900/30', 'border-green-500', 'text-green-800', 'dark:text-green-400', 'opacity-100');
+                    const cLetter = correctBtn.querySelector('.option-icon-letter');
+                    if(cLetter) {
+                        cLetter.classList.remove('border-gray-200', 'dark:border-gray-600');
+                        cLetter.classList.add('border-green-500', 'bg-green-500', 'text-white');
+                    }
+                }
+                
+                feedback.innerHTML = `<div class="quiz-success-anim flex flex-col items-center gap-4 bg-red-50 dark:bg-red-900/20 p-6 rounded-2xl border border-red-100 dark:border-red-800/50"><div class="w-20 h-20 bg-red-100 dark:bg-red-800/50 rounded-full flex items-center justify-center shadow-inner"><i class="fas fa-heart-broken text-5xl heart-icon text-red-500"></i></div><div class="text-red-600 dark:text-red-400 text-2xl font-black">للأسف، إجابتك خاطئة</div></div>`;
+            }
+        };
+
+
+        // STUDENT FUNCTIONS
+        window.studentUnits = []; window.studentButtons = []; window.studentContents = [];
+        window.studentNavStack = [];
+
+        
+        window.currentStudentProfile = null;
+        async function fetchStudentProfile() {
+            if(window.currentUserRole !== 'student' || !window.currentUser) return;
+            const { data } = await window.supabaseInstance.from('student_profiles').select('*').eq('id', window.currentUser.id).maybeSingle();
+            let local = null;
+            try { local = JSON.parse(localStorage.getItem('student_profile_' + window.currentUser.id)); } catch(e) {}
+            window.currentStudentProfile = data || local || { first_name: '', last_name: '', branch: '' };
+            updateProfileUI();
+        }
+        function updateProfileUI() {
+            const p = window.currentStudentProfile;
+            if(!p) return;
+            document.getElementById('dispFirstName').innerText = p.first_name || '-';
+            document.getElementById('dispLastName').innerText = p.last_name || '-';
+            document.getElementById('dispBranch').innerText = p.branch || '-';
+            
+            const modalFn = document.getElementById('modalDispFirstName');
+            if(modalFn) {
+                modalFn.innerText = p.first_name || '-';
+                document.getElementById('modalDispLastName').innerText = p.last_name || '-';
+                document.getElementById('modalDispBranch').innerText = p.branch || '-';
+            }
+        }
+        function toggleProfileEdit(isEdit) {
+            if(isEdit) {
+                const p = window.currentStudentProfile || {};
+                document.getElementById('profFirstName').value = p.first_name || '';
+                document.getElementById('profLastName').value = p.last_name || '';
+                document.getElementById('profBranch').value = p.branch || '';
+                document.getElementById('profileDisplayMode').classList.add('hidden');
+                document.getElementById('profileEditMode').classList.remove('hidden');
+            } else {
+                document.getElementById('profileEditMode').classList.add('hidden');
+                document.getElementById('profileDisplayMode').classList.remove('hidden');
+            }
+        }
+        async function saveStudentProfile() {
+            if(!window.currentUser) return;
+            // The email is the code + '@fakhriblogs.com', so we extract it!
+            const userEmail = window.currentUser.email || '';
+            const extractedCode = userEmail.split('@')[0] || window.currentUserCode || null;
+            
+            const p = {
+                id: window.currentUser.id,
+                first_name: document.getElementById('profFirstName').value.trim(),
+                last_name: document.getElementById('profLastName').value.trim(),
+                branch: document.getElementById('profBranch').value.trim(),
+                code: extractedCode
+            };
+            const { error } = await window.supabaseInstance.from('student_profiles').upsert(p);
+            if(error) {
+                // Fallback to local storage if DB fails
+                localStorage.setItem('student_profile_' + p.id, JSON.stringify(p));
+            }
+            window.currentStudentProfile = p;
+            updateProfileUI();
+            toggleProfileEdit(false);
+        }
+        window.showProfileModal = function() {
+            const m = document.getElementById('profileModal');
+            if(m) m.classList.add('active');
+        }
+
+        async function fetchStudentData() {
+            const [uRes, bRes, cRes] = await Promise.all([ window.supabaseInstance.from('units').select('*').order('order_index'), window.supabaseInstance.from('buttons').select('*').order('order_index'), window.supabaseInstance.from('contents').select('*') ]);
+            window.studentUnits = uRes.data || []; window.studentButtons = bRes.data || []; window.studentContents = cRes.data || [];
+        }
+
+        async function applyStudentSettings() {
+            const { data: s } = await window.supabaseInstance.from('app_settings').select('*').eq('id', 1).maybeSingle();
+            if (!s) return;
+            
+            let bgDiv = document.getElementById('globalBgImage');
+            if (!bgDiv) {
+                bgDiv = document.createElement('div');
+                bgDiv.id = 'globalBgImage';
+                bgDiv.className = 'fixed inset-0 bg-cover bg-center bg-no-repeat bg-fixed z-[-2] transition-all duration-500';
+                document.body.appendChild(bgDiv);
+                
+                let overlay = document.getElementById('globalBgOverlay');
+                if(!overlay) {
+                    overlay = document.createElement('div');
+                    overlay.id = 'globalBgOverlay';
+                    overlay.className = 'fixed inset-0 bg-white/85 dark:bg-gray-900/85 z-[-1] transition-all duration-500';
+                    document.body.appendChild(overlay);
+                }
+            }
+            
+            if(s.bg_image_url) {
+                bgDiv.style.backgroundImage = `url('${s.bg_image_url}')`;
+            } else {
+                bgDiv.style.backgroundImage = 'none';
+            }
+
+            ['studentCover', 'adminCover'].forEach(id => {
+                const cover = document.getElementById(id);
+                if(cover) { if(s.cover_image_url) { cover.style.backgroundImage = `url('${s.cover_image_url}')`; cover.classList.remove('hidden'); } else cover.classList.add('hidden'); }
+            });
+        }
+
+        function renderStudentUnits() {
+            const grid = document.getElementById('studentUnitsGrid'); if(!grid) return;
+            if(window.studentUnits.length === 0) { grid.innerHTML = '<div class="col-span-full text-center p-8 bg-white text-gray-500 font-bold shadow-md rounded-xl">لا توجد مدونات فلسفية متاحة حالياً</div>'; return; }
+            grid.innerHTML = window.studentUnits.map(u => `
+                <div onclick="openStudentUnit('${u.id}')" class="group relative h-48 md:h-64 rounded-2xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition border border-gray-200 dark:border-gray-700">
+                    <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('${u.bg_image_url || 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?q=80&w=1000&auto=format&fit=crop'}'); opacity: 0.9"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-primary/90 to-transparent pointer-events-none"></div>
+                    <div class="absolute inset-0 p-6 flex items-end pointer-events-none">
+                        <h3 class="text-3xl font-extrabold text-white flex items-center gap-3"><i class="fas fa-book text-white text-2xl"></i> ${u.title}</h3>
+                    </div>
+                </div>`).join('');
+        }
+
+        window.activeStudentUnitId = null;
+
+        function openStudentUnit(unitId) {
+            const unit = window.studentUnits.find(u => u.id === unitId); if(!unit) return;
+            window.activeStudentUnitId = unitId;
+            window.studentNavStack = [{type: 'unit', id: unitId, title: unit.title}];
+            
+            document.getElementById('studentUnitsGrid').classList.add('hidden'); 
+            document.getElementById('studentUnitDetails').classList.remove('hidden');
+            
+            renderStudentLevel();
+        }
+
+        function studentNavigateBack() {
+            if(window.studentNavStack.length <= 1) {
+                window.activeStudentUnitId = null;
+                document.getElementById('studentUnitsGrid').classList.remove('hidden'); 
+                document.getElementById('studentUnitDetails').classList.add('hidden'); 
+                renderStudentUnits(); 
+            } else {
+                window.studentNavStack.pop();
+                renderStudentLevel();
+            }
+        }
+        
+        function enterStudentFolder(btnId, btnTitle) {
+            window.studentNavStack.push({type: 'folder', id: btnId, title: btnTitle});
+            renderStudentLevel();
+        }
+
+        function renderStudentLevel() {
+            if(window.studentNavStack.length === 0) return;
+            const current = window.studentNavStack[window.studentNavStack.length - 1];
+            
+            let htmlTitle = '';
+            if(current.type === 'unit') {
+                htmlTitle = `<i class="fas fa-book text-primary dark:text-white ml-2"></i> ${current.title}`;
+            } else {
+                htmlTitle = `<i class="fas fa-folder-open text-primary dark:text-white ml-2"></i> ${current.title}`;
+            }
+            document.getElementById('activeUnitTitle').innerHTML = htmlTitle;
+            
+            let buttonsToShow = [];
+            if(current.type === 'unit') {
+                buttonsToShow = window.studentButtons.filter(b => b.unit_id === current.id && !b.parent_button_id);
+            } else {
+                buttonsToShow = window.studentButtons.filter(b => b.parent_button_id === current.id);
+            }
+            
+            const container = document.getElementById('rootButtonsContainer');
+            if(buttonsToShow.length === 0) {
+                container.innerHTML = '<div class="w-full text-center p-8 text-gray-500 font-bold bg-white/50 dark:bg-gray-800/50 rounded-xl">لا توجد محتويات هنا بعد</div>';
+            } else {
+                container.innerHTML = buttonsToShow.map(btn => {
+                    if(btn.type === 'general') {
+                        return `<button onclick="enterStudentFolder('${btn.id}', '${btn.title.replace(/'/g, "\'")}')" class="bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-600 dark:hover:bg-yellow-700 text-white border-none p-2 rounded-2xl shadow-md hover:-translate-y-1 transition-all aspect-square w-32 h-32 md:w-36 md:h-36 flex flex-col items-center justify-center gap-2 text-center overflow-hidden flex-none"><div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/20 flex items-center justify-center shrink-0"><i class="fas fa-folder text-white text-xl md:text-2xl"></i></div> <span class="text-sm md:text-base leading-tight font-semibold line-clamp-2 md:mt-1 px-2">${btn.title}</span></button>`;
+                    } else {
+                        return renderSpecificButtonHTML(btn);
+                    }
+                }).join('');
+            }
+        }
+
+        function renderSpecificButtonHTML(btn) {
+            const content = window.studentContents.find(c => c.button_id === btn.id);
+            if(!content) return `<button class="bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-500 p-2 rounded-2xl font-bold shadow-sm border border-gray-200 dark:border-gray-700 aspect-square w-32 h-32 md:w-36 md:h-36 flex flex-col items-center justify-center gap-2 text-center overflow-hidden"><div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center shrink-0"><i class="fas fa-file-alt text-gray-400 text-2xl"></i></div> <span class="text-sm md:text-base leading-tight font-semibold line-clamp-2 mt-1">${btn.title}</span></button>`;
+            
+            let iconClass = 'fa-hand-pointer'; let colorClass = 'text-accent'; let bgClass = 'bg-gray-50 dark:bg-gray-800';
+            
+            if(content.type === 'pdf') { 
+                iconClass = 'fa-file-pdf'; 
+                colorClass = 'text-white'; 
+                bgClass = 'bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'; 
+            }
+            else if(content.type === 'video') { 
+                iconClass = 'fa-play'; 
+                colorClass = 'text-white'; 
+                bgClass = 'bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700'; 
+            }
+            else if(content.type === 'image') { 
+                iconClass = 'fa-image'; 
+                colorClass = 'text-white'; 
+                bgClass = 'bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700'; 
+            }
+            else if(content.type === 'quiz') { 
+                iconClass = 'fa-question-circle'; 
+                colorClass = 'text-white'; 
+                bgClass = 'bg-purple-500 hover:bg-purple-600 dark:bg-purple-600 dark:hover:bg-purple-700'; 
+            }
+            else if(content.type === 'text') { 
+                iconClass = 'fa-pen'; 
+                colorClass = 'text-white'; 
+                bgClass = 'bg-orange-500 hover:bg-orange-600 dark:bg-orange-600 dark:hover:bg-orange-700'; 
+            }
+            
+            const iconHtml = `<div class="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center shrink-0 bg-white/20"><i class="fas ${iconClass} ${colorClass} text-xl md:text-2xl"></i></div>`;
+            const wrapperClass = `${bgClass} text-white border-none hover:shadow-lg hover:-translate-y-1 transition-all p-2 rounded-2xl shadow-md aspect-square w-32 h-32 md:w-36 md:h-36 flex flex-col items-center justify-center gap-2 text-center overflow-hidden`;
+            
+            if(content.type === 'pdf') {
+                return `<button onclick="window.open('${content.data.url}', '_blank')" class="${wrapperClass}">${iconHtml} <span class="text-sm md:text-base leading-tight font-semibold line-clamp-2 md:mt-1">${btn.title}</span></button>`;
+            }
+            return `<button onclick="openViewer('${content.id}')" class="${wrapperClass}">${iconHtml} <span class="text-sm md:text-base leading-tight font-semibold line-clamp-2 md:mt-1">${btn.title}</span></button>`;
+        }
+
+        function openViewer(contentId) {
+            const c = window.studentContents.find(x => x.id === contentId); const container = document.getElementById('viewerContainer');
+            if(c.type === 'image') {
+                container.innerHTML = `<div class="w-full h-full flex items-center justify-center p-8 relative"><img src="${c.data.url}" class="max-w-full max-h-[80vh] object-contain shadow-2xl transition-transform" id="zoomableImg"><div class="absolute bottom-10 flex gap-4 bg-black/50 p-3 rounded-full"><button onclick="zoomImg(0.2)" class="text-white text-2xl w-10 h-10"><i class="fas fa-search-plus"></i></button><button onclick="zoomImg(-0.2)" class="text-white text-2xl w-10 h-10"><i class="fas fa-search-minus"></i></button><button onclick="zoomImg(0, true)" class="text-white text-2xl w-10 h-10"><i class="fas fa-redo"></i></button></div></div>`; 
+                window.currentZoom = 1;
+            } else if (c.type === 'video') {
+                container.innerHTML = `<div class="w-full max-w-4xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl"><iframe src="${c.data.url}" class="w-full h-full border-0" allowfullscreen></iframe></div>`;
+            } else if (c.type === 'text') {
+                container.innerHTML = `<div class="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 w-full max-w-3xl rounded-xl p-8 shadow-2xl overflow-y-auto max-h-[80vh] text-right" dir="rtl"><div class="prose dark:prose-invert max-w-none text-xl leading-relaxed font-medium">${c.data.text || c.data.html}</div></div>`;
+            } else if (c.type === 'quiz') {
+                window.currentQuiz = c.data; renderQuizInteraction();
+            }
+            document.getElementById('contentViewerModal').classList.add('active');
+        }
+
+        function renderQuizInteraction() {
+            const q = window.currentQuiz;
+            document.getElementById('viewerContainer').innerHTML = `
+                <div class="bg-gray-50 dark:bg-gray-900 w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden flex flex-col mx-4 my-8">
+                    <div class="bg-primary border-b border-primary/20 p-6 flex justify-center items-center relative">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-2xl text-white shadow-inner">
+                                <i class="fas fa-question"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-white tracking-wide">اختبار تفاعلي</h3>
+                        </div>
+                    </div>
+                    <div class="p-6 md:p-10 bg-white dark:bg-gray-800 rounded-t-3xl -mt-4">
+                        <div class="text-center mb-10">
+                            <div class="inline-block bg-blue-50 dark:bg-gray-700 text-primary dark:text-blue-300 font-bold px-4 py-1.5 rounded-full text-sm mb-6 border border-blue-100 dark:border-gray-600 shadow-sm">السؤال</div>
+                            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-800 dark:text-gray-100 leading-relaxed">${q.question}</h2>
+                        </div>
+                        <div class="space-y-4" id="quizButtonsArea">
+                            ${q.options.map((opt, i) => `
+                                <button onclick="handleQuizAnswer(${i})" id="quizBtn_${i}" class="w-full flex items-center p-5 text-xl font-bold border-2 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-2xl hover:border-primary dark:hover:border-primary hover:bg-blue-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 transition-all text-right group relative overflow-hidden shadow-sm hover:shadow-md">
+                                    <span class="w-10 h-10 shrink-0 rounded-full border-2 border-gray-200 dark:border-gray-600 flex items-center justify-center ml-5 group-hover:border-primary group-hover:text-primary dark:group-hover:text-white transition-colors text-lg">${String.fromCharCode(65 + i)}</span>
+                                    <span class="flex-1">${opt.text}</span>
+                                </button>
+                            `).join('')}
+                        </div>
+                        <div id="quizResult" class="hidden mt-8 pt-8 border-t border-gray-100 dark:border-gray-700 text-center transition-all"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleQuizAnswer(idx) {
+            const q = window.currentQuiz; const isCorrect = q.options[idx].isCorrect; const btn = document.getElementById(`quizBtn_${idx}`);
+            document.querySelectorAll('#quizButtonsArea button').forEach(b => { 
+                b.disabled = true; 
+                b.classList.add('opacity-60'); 
+                b.classList.remove('hover:border-primary', 'hover:bg-blue-50', 'dark:hover:bg-gray-700', 'hover:shadow-md'); 
+            });
+            btn.classList.remove('opacity-60', 'border-gray-100', 'dark:border-gray-700');
+            const res = document.getElementById('quizResult');
+            res.classList.remove('hidden');
+            
+            if(isCorrect) { 
+                btn.classList.add('bg-green-50', 'dark:bg-green-900/30', 'border-green-500', 'text-green-800', 'dark:text-green-400', 'opacity-100', 'shadow-md'); 
+                btn.querySelector('span:first-child').classList.add('border-green-500', 'bg-green-500', 'text-white');
+                playAudioTone(true);
+                res.innerHTML = `<div class="quiz-success-anim flex flex-col items-center gap-4 bg-green-50 dark:bg-green-900/20 p-6 rounded-2xl border border-green-100 dark:border-green-800/50"><div class="w-20 h-20 bg-green-100 dark:bg-green-800/50 rounded-full flex items-center justify-center shadow-inner"><i class="fas fa-trophy text-5xl trophy-icon"></i></div><div class="text-green-600 dark:text-green-400 text-2xl font-black">أحسنت! إجابة صحيحة</div></div>`;
+            } else {
+                btn.classList.add('bg-red-50', 'dark:bg-red-900/30', 'border-red-500', 'text-red-800', 'dark:text-red-400', 'opacity-100', 'shadow-md');
+                btn.querySelector('span:first-child').classList.add('border-red-500', 'bg-red-500', 'text-white');
+                const correctIdx = q.options.findIndex(o => o.isCorrect);
+                const correctBtn = document.getElementById(`quizBtn_${correctIdx}`);
+                if(correctBtn) { 
+                    correctBtn.classList.remove('opacity-60', 'border-gray-100', 'dark:border-gray-700'); 
+                    correctBtn.classList.add('bg-green-50', 'dark:bg-green-900/30', 'border-green-500', 'text-green-800', 'dark:text-green-400', 'opacity-100'); 
+                    correctBtn.querySelector('span:first-child').classList.add('border-green-500', 'bg-green-500', 'text-white');
+                }
+                playAudioTone(false);
+                res.innerHTML = `<div class="quiz-success-anim flex flex-col items-center gap-4 bg-red-50 dark:bg-red-900/20 p-6 rounded-2xl border border-red-100 dark:border-red-800/50"><div class="w-20 h-20 bg-red-100 dark:bg-red-800/50 rounded-full flex items-center justify-center shadow-inner"><i class="fas fa-heart-broken text-5xl heart-icon"></i></div><div class="text-red-600 dark:text-red-400 text-2xl font-black">للأسف، إجابتك خاطئة</div></div>`;
+            }
+            setTimeout(() => {
+                const viewer = document.getElementById('viewerContainer');
+                if(viewer) viewer.scrollTo({top: viewer.scrollHeight, behavior: 'smooth'});
+            }, 100);
+        }
+
+        async function renderStudentBlogs() {
+            const [bRes, cRes, lRes] = await Promise.all([ window.supabaseInstance.from('blogs').select('*').order('created_at', { ascending: false }), window.supabaseInstance.from('blog_comments').select('*').order('created_at', { ascending: true }), window.supabaseInstance.from('blog_likes').select('*') ]);
+            const blogs = bRes.data || [], comments = cRes.data || [], likes = lRes.data || [];
+            if(blogs.length === 0) { document.getElementById('studentBlogsContainer').innerHTML = '<div class="text-center p-8 bg-white font-bold text-gray-500 rounded-xl">لا توجد تدوينات حاليا</div>'; return; }
+            document.getElementById('studentBlogsContainer').innerHTML = blogs.map(b => {
+                const bLikes = likes.filter(l => l.blog_id === b.id), bComments = comments.filter(c => c.blog_id === b.id);
+                const hasLiked = window.currentUser ? bLikes.some(l => l.user_id === window.currentUser.id) : false;
+                return `<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden text-gray-800 dark:text-gray-100">
+                    <div class="p-4 flex items-center gap-4 bg-gray-50 dark:bg-gray-800/80 border-b border-gray-100 dark:border-gray-700"><div class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xl shrink-0"><i class="fas fa-feather"></i></div><div><h4 class="font-bold text-lg text-primary dark:text-blue-400">مدونات فخري</h4><p class="text-sm text-gray-500 dark:text-gray-400 font-bold">${formatDateArabic(b.created_at)}</p></div></div>
+                    <div class="p-6 text-xl leading-relaxed whitespace-pre-wrap font-medium">${b.content}</div>
+                    <div class="px-6 py-3 border-t border-gray-100 dark:border-gray-700 flex items-center gap-6 bg-transparent">
+                        <button onclick="toggleLike('${b.id}', ${hasLiked})" class="${hasLiked ? 'text-primary dark:text-blue-400' : 'text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-blue-300'} font-bold flex items-center gap-2 transition"><i class="fas fa-thumbs-up"></i> (${bLikes.length})</button>
+                        <div class="text-gray-500 dark:text-gray-400 font-bold flex items-center gap-2"><i class="fas fa-comment"></i> (${bComments.length})</div>
+                    </div>
+                    <div class="p-4 border-t border-gray-100 dark:border-gray-700 space-y-4 bg-transparent">
+                        ${bComments.map(c => `<div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300 flex items-center justify-center text-xs shrink-0"><i class="fas fa-user"></i></div><div class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-2xl rounded-tr-none px-4 py-2 shadow-sm text-gray-800 dark:text-gray-200">${c.content}</div>${window.currentUserRole === 'admin' || (window.currentUser && c.user_id === window.currentUser.id) ? `<button onclick="deleteComment('${c.id}')" class="text-red-400 hover:text-red-600 dark:hover:text-red-300 text-xs transition"><i class="fas fa-trash"></i></button>` : ''}</div>`).join('')}
+                        <div class="flex gap-2 mt-4 pt-2">
+                            <input type="text" id="comment_${b.id}" onkeypress="if(event.key === 'Enter') addComment('${b.id}')" placeholder="اكتب تعليقا..." class="flex-1 p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-full focus:outline-none text-gray-800 dark:text-white">
+                            <button onclick="addComment('${b.id}')" class="bg-primary text-white w-12 h-12 rounded-full flex items-center justify-center shadow-md hover:opacity-90 transition shrink-0"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div></div>`;
+            }).join('');
+        }
+        
+        async function toggleLike(blogId, hasLiked) { 
+            if(!window.currentUser) return; 
+            try {
+                if (hasLiked) {
+                    await window.supabaseInstance.from('blog_likes').delete().eq('blog_id', blogId).eq('id', window.currentUser.id); 
+                } else {
+                    await window.supabaseInstance.from('blog_likes').insert([{ blog_id: blogId, user_id: window.currentUser.id }]); 
+                }
+                if(window.currentUserRole === 'admin') renderAdminBlogs(); else renderStudentBlogs(); 
+            } catch(e) { console.error('Methodology Save Error:', e); alert('خطأ: ' + (e.message || 'فشل الحفظ')); }
+        }
+        
+        async function addComment(blogId, isAdmin = false) { 
+            const i = document.getElementById(`comment_${blogId}${isAdmin ? '_admin' : ''}`); 
+            if(!window.currentUser || !i.value.trim()) return; 
+            try {
+                await window.supabaseInstance.from('blog_comments').insert([{ blog_id: blogId, id: window.currentUser.id, content: i.value }]); 
+                i.value = ''; 
+                if(isAdmin) renderAdminBlogs(); else renderStudentBlogs();
+            } catch (e) { console.error('Methodology Save Error:', e); alert('خطأ: ' + (e.message || 'فشل الحفظ')); }
+        }
+        
+        async function deleteComment(commentId) { 
+            if(confirm('حذف التعليق؟')) { 
+                await window.supabaseInstance.from('blog_comments').delete().eq('id', commentId); 
+                if(window.currentUserRole === 'admin') renderAdminBlogs(); else renderStudentBlogs(); 
+            } 
+        }
+
+        // ------------------ WHATSAPP CONFIG ------------------ //
+        window.loadWhatsappConfig = async function() {
+            if (!window.supabaseInstance) return;
+            try {
+                const { data } = await window.supabaseInstance.from('site_config').select('value').eq('key', 'whatsapp').single();
+                const linkInput = document.getElementById('whatsappLinkInput');
+                const msgInput = document.getElementById('whatsappMsgInput');
+                const previewContainer = document.getElementById('whatsappAdminPreview');
+                const studentDisplay = document.getElementById('studentWhatsappDisplay');
+                let link = '', msg = '';
+                if (data && data.value) { link = data.value.link || ''; msg = data.value.message || ''; }
+                if (linkInput) linkInput.value = link;
+                if (msgInput) msgInput.value = msg;
+                const renderCard = (l, m) => {
+                    if (!l) return '<div class="text-gray-400 p-8 border-2 border-dashed border-gray-200 rounded-2xl text-center">لم يتم إعداد الرابط بعد.</div>';
+                    return `<div class="bg-gradient-to-br from-green-400 to-green-600 rounded-3xl p-8 shadow-xl shadow-green-500/20 text-white relative overflow-hidden group hover:scale-[1.02] transition-transform">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                        <div class="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full blur-xl -ml-5 -mb-5"></div>
+                        <div class="flex flex-col items-center justify-center relative z-10 text-center gap-4">
+                            <div class="relative w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-lg">
+                                <span class="absolute top-1 right-1 flex h-4 w-4">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-4 w-4 bg-green-500 border-2 border-white"></span>
+                                </span>
+                                <i class="fab fa-whatsapp text-5xl text-green-500"></i>
+                            </div>
+                            <h3 class="text-2xl font-black text-white drop-shadow-md">تواصل عبر واتساب</h3>
+                            ${m ? `<p class="text-green-50 font-medium leading-relaxed max-w-[250px] mx-auto">${m}</p>` : ''}
+                            <a href="${l}" target="_blank" class="mt-4 bg-white text-green-600 font-bold px-8 py-3 rounded-full shadow-lg hover:shadow-xl hover:bg-gray-50 transition flex items-center justify-center gap-2 w-full">
+                                <span>بدء المحادثة الآن</span>
+                                <i class="fas fa-paper-plane"></i>
+                            </a>
+                        </div>
+                    </div>`;
+                };
+                if (previewContainer) previewContainer.innerHTML = renderCard(link, msg);
+                if (studentDisplay) studentDisplay.innerHTML = renderCard(link, msg);
+            } catch(e) {
+                console.error("loadWhatsappConfig error:", e);
+            }
+        };
+
+        window.saveWhatsappConfig = async function() {
+            if (!window.supabaseInstance) { alert('⏳ لم يتصل التطبيق بعد، انتظر لحظة ثم أعد المحاولة'); return; }
+            const link = document.getElementById('whatsappLinkInput').value.trim();
+            const message = document.getElementById('whatsappMsgInput').value.trim();
+            if (!link) { alert('⚠️ الرجاء إدخال رابط واتساب أولاً'); return; }
+            try {
+                const { error } = await window.supabaseInstance
+                    .from('site_config')
+                    .upsert({ key: 'whatsapp', value: { link, message }, updated_at: new Date().toISOString() },
+                             { onConflict: 'key', ignoreDuplicates: false });
+                if (error) throw error;
+                alert('✅ تم حفظ إعدادات الواتساب بنجاح');
+                window.loadWhatsappConfig();
+            } catch (e) {
+                console.error("saveWhatsappConfig error:", e);
+                alert('❌ خطأ في الحفظ: ' + (e.message || JSON.stringify(e)));
+            }
+        };
+
+        // TOP LEVEL EXECUTION
+        try {
+            window.isDarkMode = false;
+            try { window.isDarkMode = localStorage.getItem('fakhri_theme') === 'dark'; } catch(e) {}
+            if(window.isDarkMode) { document.documentElement.classList.add('dark'); }
+            setTimeout(syncThemeIcons, 100);
+
+            window.supabaseInstance = null;
+            const SUPABASE_URL = 'https://jtggworuxaxezseytyjf.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp0Z2d3b3J1eGF4ZXpzZXl0eWpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1ODI0ODYsImV4cCI6MjEwMTE1ODQ4Nn0.JHJxYbclzxdC2nBq7F9KcDh3GCZf7k40yW3Da6Q3Xac';
+            
+            let initAttempts = 0;
+            function initializeDB() {
+                if(window.supabase) {
+                    window.supabaseInstance = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    checkSessionAndRealtime();
+                } else if (initAttempts < 20) {
+                    initAttempts++;
+                    setTimeout(initializeDB, 500);
+                }
+            }
+
+            async function checkSessionAndRealtime() {
+                try {
+                    const { data: { session } } = await window.supabaseInstance.auth.getSession();
+                    if (session && session.user) await checkUserRoleAndRedirect(session.user);
+
+                    window.supabaseInstance.channel('public-db-changes')
+                        .on('postgres_changes', { event: '*', schema: 'public' }, async (payload) => {
+                            if (window.currentUserRole === 'admin') {
+                                if (payload.table === 'login_codes') renderAdminCodes();
+                                if (['units', 'buttons', 'contents'].includes(payload.table)) {
+                                    if(window.currentUnitId) renderAdminButtons(window.currentUnitId, window.currentParentButtonId);
+                                    else renderAdminUnits();
+                                }
+                                if (['blogs', 'blog_comments', 'blog_likes'].includes(payload.table)) renderAdminBlogs();
+                            } else if (window.currentUserRole === 'student') {
+                                if (['units', 'buttons', 'contents'].includes(payload.table)) { 
+                                    await fetchStudentData(); 
+                                    if(!window.activeStudentUnitId) renderStudentUnits(); 
+                                    else renderStudentLevel();
+                                }
+                                if (['blogs', 'blog_likes', 'blog_comments'].includes(payload.table)) renderStudentBlogs();
+                                if (payload.table === 'app_settings') applyStudentSettings();
+                            }
+                        }).subscribe();
+                } catch(e) {
+                    console.error("Session/Realtime init failed", e);
+                }
+            }
+
+            initializeDB();
+
+        } catch (fatalError) {
+            console.error("Fatal top level error:", fatalError);
+        }
+
+    
+                window.viewStudentProfileFromAdmin = async function(code) {
+            try {
+                // Fetch all profiles without RLS restriction
+                const { data, error } = await window.supabaseInstance.from('student_profiles').select('*');
+                if (error) return alert('خطأ في الاتصال بقاعدة البيانات: ' + error.message);
+                if (!data || data.length === 0) return alert('لا توجد أي بطاقات محفوظة في النظام حالياً.');
+
+                // Search for the profile using the code
+                const codeLower = String(code).toLowerCase().trim();
+                const validProfiles = data.filter(p => {
+                    const pCode = String(p.code || '').toLowerCase().trim();
+                    return pCode === codeLower || 
+                           pCode === 'student_' + codeLower || 
+                           pCode === codeLower + '@fakhriblogs.com' || 
+                           (pCode !== '' && pCode.includes(codeLower));
+                });
+                
+                // Prioritize the profile that actually has a first_name filled out
+                let profile = validProfiles.find(p => p.first_name && p.first_name.trim() !== '');
+                if (!profile && validProfiles.length > 0) profile = validProfiles[0];
+                
+                if (!profile) {
+                    alert('هذا التلميذ (صاحب الكود ' + code + ') لم يقم بتسجيل معلومات بطاقته في حسابه بعد. يرجى الطلب منه الدخول لحسابه والنقر على زر حفظ المعلومات لتظهر هنا.');
+                    return;
+                }
+                
+                // Show modal with data
+                document.getElementById('modalDispFirstName').textContent = profile.first_name || '-';
+                document.getElementById('modalDispLastName').textContent = profile.last_name || '-';
+                document.getElementById('modalDispBranch').textContent = profile.branch || '-';
+                
+                const m = document.getElementById('profileModal');
+                if(m) m.classList.add('active');
+                
+            } catch(e) {
+                console.error('Methodology Save Error:', e); alert('خطأ: ' + (e.message || 'فشل الحفظ'));
+                alert('خطأ غير متوقع: ' + e.message);
+            }
+        };
+
+</script>
+
+        <!-- Game Play View -->
+        <div id="gamePlayView" class="hidden fixed inset-0 z-[100] bg-gray-50 dark:bg-gray-900 overflow-y-auto">
+            <div class="max-w-3xl mx-auto w-full min-h-screen flex flex-col p-4 md:p-8 relative">
+                <!-- Top Bar -->
+                <div class="flex justify-between items-center mb-8 relative z-10">
+                    <button onclick="closeGamePlay()" class="w-12 h-12 bg-white dark:bg-gray-800 rounded-full shadow-sm flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/30 dark:hover:text-red-400 transition-all border border-gray-100 dark:border-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                    <div class="px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 font-bold rounded-full text-sm flex items-center gap-2">
+                        <i class="fas fa-gamepad"></i> كويز تفاعلي
+                    </div>
+                </div>
+
+                <!-- Game Content -->
+                <div class="flex-1 flex flex-col justify-center items-center relative z-10 w-full max-w-4xl mx-auto">
+                    <div class="w-full bg-white dark:bg-gray-800 rounded-[2rem] p-6 md:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 dark:border-gray-700 text-center mb-8 relative">
+                        <div class="w-20 h-20 mx-auto bg-purple-50 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center text-purple-600 dark:text-purple-400 mb-6">
+                            <i class="fas fa-question text-4xl"></i>
+                        </div>
+                        
+                        <h2 id="playGameTitle" class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-4 tracking-wider">عنوان الكويز</h2>
+                        <h3 id="playGameQuestion" class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white leading-relaxed">نص السؤال هنا...</h3>
+                    </div>
+
+                    <div id="playGameOptions" class="w-full grid grid-cols-1 gap-4 relative z-10">
+                        <!-- Options load here -->
+                    </div>
+                    
+                    <div id="gameResultFeedback" class="w-full mt-6 hidden transform transition-all duration-300">
+                        <div class="p-6 rounded-[2rem] text-center font-bold text-lg md:text-xl border relative overflow-hidden flex items-center justify-center gap-3">
+                            <!-- Feedback loads here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</body>
+</html>
