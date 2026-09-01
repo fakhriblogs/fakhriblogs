@@ -1,1 +1,29 @@
-
+{
+  "name": "مدونات فخري",
+  "short_name": "فخري",
+  "description": "منصة تعليمية لمدونات فخري — محتوى منظم وتفاعلي للتلاميذ",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#002244",
+  "theme_color": "#002244",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%23002244'/%3E%3Cpath d='M320 80 C380 80 430 130 430 200 C430 300 310 370 256 430 C202 370 82 300 82 200 C82 130 132 80 192 80 C220 80 245 92 256 110 C267 92 292 80 320 80Z' fill='none' stroke='%237eb8f7' stroke-width='12'/%3E%3Cpath d='M256 140 Q310 200 290 310 Q270 360 256 390 Q242 360 222 310 Q202 200 256 140Z' fill='%237eb8f7' opacity='0.7'/%3E%3Ccircle cx='256' cy='200' r='18' fill='%23ffffff'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='30' fill='%23002244'/%3E%3Cpath d='M120 30C143 30 162 49 162 75C162 113 117 139 96 161C75 139 30 113 30 75C30 49 49 30 72 30C84 30 92 35 96 41C100 35 108 30 120 30Z' fill='none' stroke='%237eb8f7' stroke-width='5'/%3E%3Cpath d='M96 53Q117 75 109 116Q103 135 96 147Q89 135 83 116Q75 75 96 53Z' fill='%237eb8f7' opacity='0.7'/%3E%3Ccircle cx='96' cy='75' r='7' fill='%23ffffff'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education"],
+  "screenshots": []
+}
