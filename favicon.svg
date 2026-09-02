@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <!-- خلفية داكنة مستديرة -->
+  <rect width="192" height="192" rx="28" fill="#001833"/>
+  <!-- جذع الريشة — خط عمودي أبيض من القاعدة للقمة -->
+  <line x1="96" y1="158" x2="96" y2="34" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+  <!-- الجانب الأيمن من الريشة -->
+  <path d="M96 42 C122 52 146 74 146 104 C146 130 122 150 96 158"
+        fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+  <!-- الجانب الأيسر من الريشة -->
+  <path d="M96 42 C70 52 46 74 46 104 C46 130 70 150 96 158"
+        fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+  <!-- خطوط الزينة اليمنى -->
+  <path d="M96 60 C112 67 130 83 133 100"
+        fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.55"/>
+  <path d="M96 82 C112 89 128 104 129 120"
+        fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.55"/>
+  <path d="M96 104 C108 109 120 122 119 135"
+        fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.55"/>
+  <!-- خطوط الزينة اليسرى -->
+  <path d="M96 60 C80 67 62 83 59 100"
+        fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.55"/>
+  <path d="M96 82 C80 89 64 104 63 120"
+        fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.55"/>
+  <path d="M96 104 C84 109 72 122 73 135"
+        fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.55"/>
+</svg>
